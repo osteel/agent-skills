@@ -79,7 +79,7 @@ Write a PR title (under 70 chars) and body using this format:
 - <bulleted checklist of what to verify>
 ```
 
-Do not add "Generated with Claude Code" or any mention of Claude/AI in the PR description. Create with:
+Do not add "Generated with Claude Code" or any mention of Claude/AI in the PR description. Create with (no confirmation needed):
 
 ```
 gh pr create --title "..." --body "$(cat <<'EOF'
@@ -99,7 +99,7 @@ Gather context:
 - `git diff main...HEAD`
 - Current PR body: `gh pr view --json body -q .body`
 
-Rewrite the PR description to reflect the current state of the branch (same format as step 9). Update with:
+Rewrite the PR description to reflect the current state of the branch (same format as step 9). Update with (no confirmation needed):
 
 ```
 gh pr edit --body "$(cat <<'EOF'
