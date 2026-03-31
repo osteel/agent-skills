@@ -29,19 +29,25 @@ If found:
 - Present your proposed changes to the user and wait for approval before editing PLAN.md
 - Apply approved changes to PLAN.md before continuing
 
-## 4. Update AI guidelines (Laravel projects only)
+## 4. Update agent rules (if applicable)
+
+Look for an agent rules directory in the project root. Common locations include `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/`, or similar agent-specific rules directories. For reference: [Claude rules](https://code.claude.com/docs/en/memory#organize-rules-with-claude/rules/), [Cursor rules](https://cursor.com/docs/rules). If none exist, skip this step silently.
+
+If one or more exist, examine the uncommitted diff (`git diff HEAD`) for anything that should be captured as agent-operation guidance — non-obvious constraints, patterns, or invariants that future agents need to know to work correctly in this codebase. Compare against existing rule files to avoid duplication. If you find anything worth adding or updating, edit the relevant rule file(s) directly (or create a new one if no existing file fits). Apply the same update to each rules directory that exists. If nothing qualifies, skip silently.
+
+## 5. Update AI guidelines (Laravel projects only)
 
 Check if an `.ai/guidelines/` directory exists in the project root. If it does not exist, skip this step silently.
 
 If it exists, examine the uncommitted diff (`git diff HEAD`) for any non-obvious project-specific decisions that future agents would not infer from standard Laravel patterns or existing guidelines. If you find anything worth recording, invoke the `laravel-guidelines` skill (that skill may ask you questions — answer them and continue), then run `artisan boost:install` to regenerate `CLAUDE.md`. If nothing qualifies, skip silently.
 
-## 5. Create an ADR (if applicable)
+## 6. Create an ADR (if applicable)
 
 Check if a directory for ADRs exists in the project (look for `docs/decisions/`, `docs/adr/`, or similar). If no such directory exists, skip this step silently.
 
 If it exists, examine the uncommitted diff (`git diff HEAD`) for architectural or significant design decisions that warrant an ADR. If you identify one, invoke the `adr` skill (that skill may ask you questions — answer them and continue). If nothing warrants an ADR, skip silently.
 
-## 6. Commit uncommitted changes (if any)
+## 7. Commit uncommitted changes (if any)
 
 Run `git status --short` (never `-uall`).
 
@@ -51,19 +57,19 @@ If there are staged or unstaged changes (including any PLAN.md or ADR files from
 - Write a clear commit message and commit immediately (no confirmation needed)
 - Commit using the project's default git config (no co-author lines, no Claude attribution)
 
-## 7. Push the branch
+## 8. Push the branch
 
 Check if the branch has a remote tracking branch and is ahead. Push with `-u origin <branch>` if needed.
 
-## 8. Check for an existing PR
+## 9. Check for an existing PR
 
 Run `gh pr view --json number,title,url 2>/dev/null`.
 
 Branch on the result:
-- **No PR exists** → go to step 9
-- **PR exists** → go to step 10
+- **No PR exists** → go to step 10
+- **PR exists** → go to step 11
 
-## 9. Create the PR
+## 10. Create the PR
 
 Gather context:
 - `git log main...HEAD --oneline` — all commits on this branch
@@ -79,7 +85,7 @@ Write a PR title (under 70 chars) and body using this format:
 - <bulleted checklist of what to verify>
 ```
 
-Do not add "Generated with Claude Code" or any mention of Claude/AI in the PR description. Create with (no confirmation needed):
+Do not add "Generated with Claude Code" or any mention of Claude/AI in the PR description. Create immediately (no confirmation needed):
 
 ```
 gh pr create --title "..." --body "$(cat <<'EOF'
@@ -90,7 +96,7 @@ EOF
 
 Then print the PR URL.
 
-## 10. Update the existing PR
+## 11. Update the existing PR
 
 Note: this rewrites the entire PR body. If the existing description contains manually-added notes or reviewer context worth preserving, incorporate them into the rewrite rather than discarding them.
 
@@ -99,7 +105,7 @@ Gather context:
 - `git diff main...HEAD`
 - Current PR body: `gh pr view --json body -q .body`
 
-Rewrite the PR description to reflect the current state of the branch (same format as step 9). Update with (no confirmation needed):
+Rewrite the PR description to reflect the current state of the branch (same format as step 9). Update immediately (no confirmation needed):
 
 ```
 gh pr edit --body "$(cat <<'EOF'
