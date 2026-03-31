@@ -2,8 +2,6 @@
 name: laravel-guidelines
 description: Manages project-specific AI guidelines in `.ai/guidelines/` for Laravel projects. Use when the user wants to record, update, or remove a non-obvious project convention, architectural decision, or tricky detail that agents wouldn't infer from standard Laravel patterns or CLAUDE.md. Also activate automatically after completing any Laravel implementation task that introduced new models, services, jobs, observers, or non-standard behaviour — to capture decisions future agents wouldn't easily infer.
 effort: medium
-user-invocable: true
-disable-model-invocation: false
 ---
 
 # Laravel Guidelines Manager

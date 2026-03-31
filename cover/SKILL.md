@@ -2,7 +2,6 @@
 name: cover
 description: Identify and add tests for recent code changes. Use when the user says things like "add some tests", "make sure this is tested", "we need tests for this", or after completing a feature or fix. Invoke proactively when significant new behavior has been added without tests.
 effort: medium
-disable-model-invocation: true
 ---
 
 # Test Coverage for Recent Work

@@ -1,7 +1,7 @@
 ---
 name: test
 description: Run the test suite and fix any failures. Use after writing or changing code, when tests are failing, or when the user asks to run tests, check tests, or make tests pass.
-effort: high
+effort: medium
 ---
 
 # Run Tests and Fix Failures

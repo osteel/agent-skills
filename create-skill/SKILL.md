@@ -1,6 +1,7 @@
 ---
 name: create-skill
 description: Create a new global skill and install it across all agent harnesses. Use when the user wants to build a new skill, add a skill to the global skills library, or says things like "create a skill for X", "make a skill that does X", "add a skill to my library". Triggers the full skill-creator workflow, then moves the result into ~/.agents/skills/ and symlinks it everywhere.
+effort: high
 ---
 
 # Create Global Skill

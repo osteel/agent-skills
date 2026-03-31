@@ -2,8 +2,6 @@
 name: review
 description: Deep code review using the best available model. Use whenever the user asks to "review", "check", "audit", or "critique" recent code changes — uncommitted work, a feature branch, or an open PR. Also trigger proactively after implementing a non-trivial feature when quality assurance would be valuable. Spawns a dedicated reviewer sub-agent (Opus, extended thinking), then the main agent validates findings and applies sensible fixes.
 effort: max
-user-invocable: true
-disable-model-invocation: true
 ---
 
 # Deep Code Review

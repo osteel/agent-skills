@@ -1,8 +1,7 @@
 ---
 name: polish
 description: Polish UI and UX — use when the user says things like "make this look better", "the UI feels rough", "improve the design", "this needs some polish", or "clean up the UI". Applies ui-rules and ux-principles to review and improve a specific view or component.
-effort: high
-disable-model-invocation: true
+effort: max
 ---
 
 # Polish UI and UX

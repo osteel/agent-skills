@@ -2,8 +2,6 @@
 name: wrap-up
 description: Wraps up completed work — use when the user says things like "ship it", "let's wrap up", "create a PR", "commit and push", or "I'm done". Updates PLAN.md if present, updates AI guidelines and ADR docs where applicable, commits everything, then opens or updates a GitHub PR. Guards against working on main.
 effort: high
-user-invocable: true
-disable-model-invocation: true
 ---
 
 Follow these steps in order. Do not skip steps.
@@ -31,7 +29,7 @@ If found:
 
 ## 4. Update agent rules (if applicable)
 
-Look for an agent rules directory in the project root. Common locations include `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/`, or similar agent-specific rules directories. For reference: [Claude rules](https://code.claude.com/docs/en/memory#organize-rules-with-claude/rules/), [Cursor rules](https://cursor.com/docs/rules). If none exist, skip this step silently.
+Look for agent rules directories in the project root (there may be more than one). Common locations include `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/`, or similar agent-specific rules directories. For reference: [Claude rules](https://code.claude.com/docs/en/memory#organize-rules-with-claude/rules/), [Cursor rules](https://cursor.com/docs/rules). If none exist, skip this step silently.
 
 If one or more exist, examine the uncommitted diff (`git diff HEAD`) for anything that should be captured as agent-operation guidance — non-obvious constraints, patterns, or invariants that future agents need to know to work correctly in this codebase. Compare against existing rule files to avoid duplication. If you find anything worth adding or updating, edit the relevant rule file(s) directly (or create a new one if no existing file fits). Apply the same update to each rules directory that exists. If nothing qualifies, skip silently.
 

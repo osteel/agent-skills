@@ -1,8 +1,7 @@
 ---
 name: finalise
 description: Clean up completed feature work — remove dead code, false starts, and over-engineering from iteration. Use when the user says things like "clean this up", "tidy this", "remove the dead code", or "let's clean up before the PR".
-effort: high
-disable-model-invocation: true
+effort: max
 ---
 
 # Clean Up Recent Work

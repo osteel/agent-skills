@@ -1,6 +1,7 @@
 ---
 name: adr
 description: Create architectural decision records in MADR format. Use when the user wants to document a technical decision, record an architecture choice, or create an ADR. Also invoke proactively after completing a significant architectural or design decision, even if the user hasn't explicitly asked for an ADR.
+effort: medium
 ---
 
 # Create an ADR
