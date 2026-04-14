@@ -61,11 +61,11 @@ Check if the branch has a remote tracking branch and is ahead. Push with `-u ori
 
 ## 9. Check for an existing PR
 
-Run `gh pr view --json number,title,url 2>/dev/null`.
+Run `gh pr view --json number,title,url,headRefOid 2>/dev/null`.
 
 Branch on the result:
 - **No PR exists** → go to step 10
-- **PR exists** → go to step 11
+- **PR exists** → run `git merge-base --is-ancestor <headRefOid> HEAD` (substituting the actual commit hash). If it exits 0, the PR belongs to this branch's history → go to step 11. If it exits non-zero, the branch name was reused and this PR belongs to different work — go to step 10.
 
 ## 10. Create the PR
 
@@ -96,7 +96,7 @@ Then print the PR URL.
 
 ## 11. Update the existing PR
 
-Note: this rewrites the entire PR body. If the existing description contains manually-added notes or reviewer context worth preserving, incorporate them into the rewrite rather than discarding them.
+Note: only reached when the existing PR's commit was confirmed as an ancestor of the current HEAD. This rewrites the entire PR body. If the existing description contains manually-added notes or reviewer context worth preserving, incorporate them into the rewrite rather than discarding them.
 
 Gather context:
 - `git log main...HEAD --oneline`

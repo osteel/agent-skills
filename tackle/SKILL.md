@@ -37,34 +37,36 @@ Ask the user: "What task would you like to tackle?" Wait for their response, the
 
 ---
 
-## Step 3: Context gathering (plan mode)
+## Step 3: Context gathering and planning (subagent)
 
-Stay in plan mode throughout this step. Gather everything needed to understand the task fully before proposing anything.
+Delegate Steps 3 and 4 to a subagent using the Agent tool with the most capable model available. Pass it:
 
-Read the following, using judgment about which are relevant:
+- The task description
+- The plan file contents (if found)
+- Any conversation context needed to understand the task
 
-- The plan file (if not already read)
-- Relevant ADRs — scan `docs/decisions/` or `docs/adr/` filenames, read the ones related to the task
-- Relevant spec/product docs — any `SPEC.md`, `PRD.md`, or equivalent
-- Source files directly related to the task (models, controllers, services, tests, views — whatever applies)
+The subagent should:
 
-Ask the user any clarifying questions you need answered before you can write a solid implementation plan. Keep asking until you have everything you need. Batch questions where possible — don't ask one at a time if you can help it.
+1. Gather everything needed to understand the task fully:
+   - Relevant ADRs — scan `docs/decisions/` or `docs/adr/` filenames, read the ones related to the task
+   - Relevant spec/product docs — any `SPEC.md`, `PRD.md`, or equivalent
+   - Source files directly related to the task (models, controllers, services, tests, views — whatever applies)
+
+2. Return a concise implementation plan covering:
+   - What will be created or changed (files, classes, DB schema, etc.)
+   - Key decisions or trade-offs
+   - Any risks or unknowns
+   - Any clarifying questions that must be answered before implementation can begin
+
+Wait for the subagent to return its plan and any questions.
 
 ---
 
-## Step 4: Propose an implementation plan (plan mode)
+## Step 4: Refine and approve the plan
 
-Write a concise implementation plan covering:
+Present the plan and any questions from the planning subagent to the user. Answer questions and incorporate feedback. If the user requests changes, relay them to the subagent (or revise directly if minor) and re-present.
 
-- What will be created or changed (files, classes, DB schema, etc.)
-- Key decisions or trade-offs
-- Any risks or unknowns
-
-Keep it scannable — bullets over prose. The user should be able to approve or push back quickly.
-
-Wait for the user to approve the plan. If they request changes, revise and re-present. Repeat until approved.
-
-Once the plan is approved, exit plan mode.
+Repeat until the user approves the plan.
 
 ---
 

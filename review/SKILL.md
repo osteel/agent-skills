@@ -1,6 +1,6 @@
 ---
 name: review
-description: Deep code review using the best available model. Use whenever the user asks to "review", "check", "audit", or "critique" recent code changes — uncommitted work, a feature branch, or an open PR. Also trigger proactively after implementing a non-trivial feature when quality assurance would be valuable. Spawns a dedicated reviewer sub-agent (Opus, extended thinking), then the main agent validates findings and applies sensible fixes.
+description: Deep code review using the best available model. Use whenever the user asks to "review", "check", "audit", or "critique" recent code changes — uncommitted work, a feature branch, or an open PR. Also trigger proactively after implementing a non-trivial feature when quality assurance would be valuable. Spawns a dedicated reviewer sub-agent with extended thinking, then the main agent validates findings and applies sensible fixes.
 effort: max
 ---
 
@@ -46,7 +46,7 @@ Run in parallel:
 
 ## Step 3: Spawn the reviewer sub-agent
 
-Launch a **single sub-agent** using the Agent tool with `model: "opus"` (this always resolves to the latest Opus). Set `thinking` budget high — at least 10,000 tokens if the tool supports it.
+Launch a **single sub-agent** using the Agent tool with the most capable model available. Set `thinking` budget high — at least 10,000 tokens if the tool supports it.
 
 Provide the sub-agent with the full diff, CLAUDE.md contents, PR description, and plan file (if any). Use this prompt:
 
