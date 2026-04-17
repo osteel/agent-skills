@@ -1,6 +1,6 @@
 ---
 name: team
-description: "Team of agents. Use when user wants to spawn agents, create a team, or coordinate multiple agents. Automatically gathers context, asks team topology questions, outputs clean TEAM PLAN markdown, and gets user approval. 3 steps: context gathering → questions → present plan. **CRITICAL**: MUST NOT SPAWN AGENTS SKIPPING THIS SKILL, USE ALWAYS."
+description: "Team of agents. Use when user wants to spawn agents, create a team, or coordinate multiple agents (N≥2). Automatically gathers context, asks team topology questions, outputs clean TEAM PLAN markdown, and gets user approval. 3 steps: context gathering → questions → present plan. Use this before spawning agents so the team topology is considered and structured, not improvised — ad-hoc spawning leads to duplicated work and missed dependencies. For a single agent, use the Agent tool directly instead."
 effort: max
 ---
 
@@ -91,7 +91,7 @@ Agents: [count]
 - Cancel — abort
 ```
 
-**Deploy & Save** → save team as skill at `~/.claude/skills/<team-name>/SKILL.md` for future use via `/<team-name> [task]`. Saved skill skips planning, bakes in agent definitions, uses `$ARGUMENTS` for task input.
+**Deploy & Save** → use the `create-skill` skill to save this team as a reusable global skill. The saved skill should skip planning, bake in the agent definitions, and accept `$ARGUMENTS` for task input.
 
 **Adjust** → ask what to change → regenerate plan → ask again. Loop until approved.
 
@@ -106,4 +106,15 @@ Based on chosen pattern:
 - **Team**: TeamCreate → TaskCreate per agent → Task tool with `team_name` → TaskUpdate for dependencies
 - **Hub-spoke**: TeamCreate with lead agent (opus) that delegates via SendMessage
 
-For detailed agent prompt structure, see [references/agent-prompts.md](references/agent-prompts.md).
+Every agent prompt follows this structure:
+
+```
+ROLE: [one-line role]
+CONTEXT: [project stack, task, constraints]
+TASK: [specific deliverable]
+RULES: [execution constraints from CLAUDE.md]
+```
+
+Keep prompts short. Each agent gets its own context window — it doesn't inherit conversation history.
+
+**Deploy & Save**: use the `create-skill` skill to save the team as a reusable global skill rather than writing the SKILL.md directly — it handles installation and symlinking correctly.

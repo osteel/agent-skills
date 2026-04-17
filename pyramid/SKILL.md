@@ -1,6 +1,6 @@
 ---
 name: pyramid
-description: Audit the test suite against test pyramid principles and fix the issues found. Use when the user says things like "review our test pyramid", "our tests are slow", "audit the test suite", "improve test distribution", "too many end-to-end tests", "tests are taking too long", or "are our tests in the right layer". Also invoke proactively after a major feature milestone when the test suite has grown significantly. This skill identifies mislabeled tests, dataset opportunities, and redundant tests — then executes the approved fixes.
+description: Audit the test suite against test pyramid principles and fix the issues found. Use when the user says things like "review our test pyramid", "our tests are slow", "audit the test suite", "improve test distribution", "too many end-to-end tests", "tests are taking too long", or "are our tests in the right layer". Also invoke proactively after a major feature milestone when the test suite has grown significantly. This skill identifies mislabeled tests, dataset opportunities, and redundant tests — then executes the approved fixes. Distinct from `cover` (which adds missing tests for recent changes) — pyramid audits the full suite for structural/distribution issues. Use the `test` skill to run the suite during Phase 1 and Phase 4. If the project has no distinct test layers, note this and skip this audit.
 effort: max
 ---
 
@@ -28,14 +28,9 @@ Explore the full test suite before forming any opinions.
 
 Work through each layer systematically. The goal is to find work that is genuinely worth doing — not to move things for the sake of it.
 
-### Tests in the wrong layer
+### Tests in the wrong layer or redundant at a higher layer
 
 For each test file, ask: does this test actually need what its layer provides?
-
-**Slow tests that don't use what makes them slow:**
-- An integration test that boots a database but never queries it
-- A browser test that loads a real browser but only checks something a component-level test already verifies
-- A "unit" test that actually boots the full application framework
 
 When reading tests, look for the real dependencies:
 - Does it persist data or query a real database?
@@ -43,22 +38,12 @@ When reading tests, look for the real dependencies:
 - Does it need the application container or service locator?
 - Or does it only work with plain objects, mocks, and value objects?
 
-If a test doesn't need its layer's infrastructure, it belongs somewhere faster.
-
-### Browser/e2e tests duplicating lower-level coverage
-
-For each browser or e2e test, check whether an integration or component test already asserts the same behaviour.
+If a test doesn't need its layer's infrastructure, it belongs somewhere faster. Equally, if a browser/e2e test only verifies something already asserted by a faster test (content appearing, validation firing, behaviour fully covered at a lower level), it's redundant.
 
 Keep browser tests only when they test something that genuinely requires a real browser or full stack:
 - JavaScript interactions (form toggles, modal open/close, dropdowns, reactive UI)
 - DOM state not visible at the component level (disabled attributes, CSS classes, aria attributes)
-- Cross-component reactivity (one action in component A updating component B's rendered output)
-- Timing-sensitive behaviour (animations, polling, notifications appearing)
-
-Remove browser tests when:
-- The test only verifies that content appears on a page — a lower-level test already confirms the same rendered output
-- The test confirms that validation fires — a component or integration test verifies this more precisely and faster
-- The behaviour is fully covered at a lower level and the browser test adds no browser-specific concern
+- Cross-component reactivity or timing-sensitive behaviour
 
 When in doubt, keep the browser test. A false positive removal is worse than a redundant one.
 
@@ -86,48 +71,7 @@ Don't flag files that follow a legitimate project convention even if it differs 
 
 ## Phase 3: Report
 
-Present findings before touching anything.
-
-Structure the report like this:
-
-```
-## Test Pyramid Audit
-
-### Current state
-- Unit: X tests across Y files
-- Integration: X tests across Y files
-- Browser/E2E: X tests across Y files
-- Total: X tests
-
-### Proposed changes
-
-#### 1. Move to a faster layer (N tests)
-[File] — [current layer → target layer]
-Reason: [what infrastructure it uses vs. what it needs]
-
-#### 2. Remove redundant browser/e2e tests (N tests across N files)
-[File] > [test name]
-Already covered by: [specific test in faster layer]
-
-#### 3. Dataset opportunities (N consolidations)
-[File] > [list of test names]
-Could become: one parameterised test with N cases
-
-#### 4. Duplicate tests
-[File A] > [test] duplicates [File B] > [test]
-Keep: [which one and why]
-
-#### 5. Folder structure mismatches (N files)
-[Current path] → [Proposed path]
-Reason: [what app path it mirrors, or why the current location is confusing]
-
-### Not changing
-[Brief note on what was reviewed and left alone — so the user knows it was considered]
-
-### Summary
-Net change: −N tests removed, +N dataset cases added, N tests moved to faster layer
-Baseline runtime: [recorded from Phase 1]
-```
+Present findings before touching anything. Use the report template in `references/report-template.md`.
 
 Ask: "Should I proceed with all of these, or are there any you'd like to skip or discuss first?"
 

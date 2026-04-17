@@ -18,7 +18,7 @@ First, check whether a test run is necessary:
 
 - Run `git status --short` and `git diff HEAD --name-only`.
 - If there are no uncommitted changes, or all changes are to documentation or configuration files only (e.g. `.md` files, `PLAN.md`, ADR files, guidelines, lock files), skip this step — the suite was already passing and nothing that could affect tests has changed.
-- If there are uncommitted changes to source or test files, invoke the `test` skill. If all tests pass, continue. If any fail, stop and resolve them before proceeding.
+- If there are uncommitted changes to source or test files, invoke the `test` skill. If all tests pass, continue. If any fail, stop and resolve them before proceeding. If no test command can be identified (no config, no test scripts), note this and continue.
 
 ## 3. Check for PLAN.md
 
@@ -31,23 +31,18 @@ If found:
 - Present your proposed changes to the user and wait for approval before editing PLAN.md
 - Apply approved changes to PLAN.md before continuing
 
-## 4. Update agent rules (if applicable)
+## 4–6. Post-implementation documentation
 
-Look for agent rules directories in the project root (there may be more than one). Common locations include `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/`, or similar agent-specific rules directories. For reference: [Claude rules](https://code.claude.com/docs/en/memory#organize-rules-with-claude/rules/), [Cursor rules](https://cursor.com/docs/rules). If none exist, skip this step silently.
+Examine `git diff HEAD` once, then check each of these in order:
 
-If one or more exist, examine the uncommitted diff (`git diff HEAD`) for anything that should be captured as agent-operation guidance — non-obvious constraints, patterns, or invariants that future agents need to know to work correctly in this codebase. Compare against existing rule files to avoid duplication. If you find anything worth adding or updating, edit the relevant rule file(s) directly (or create a new one if no existing file fits). Apply the same update to each rules directory that exists. If nothing qualifies, skip silently.
+| Check | Condition | Action |
+|-------|-----------|--------|
+| Agent rules | `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/` exists | Add/update rules for non-obvious constraints; apply to all rules dirs found |
+| Laravel guidelines | `.ai/guidelines/` exists | Invoke `laravel-guidelines` if diff contains non-standard decisions; run `artisan boost:install` after |
+| ADR | `docs/decisions/` or `docs/adr/` exists | Invoke `adr` if diff contains an architectural or significant design decision |
+| Documentation | Any docs directory exists (`docs/`, `doc/`, `documentation/`, or similar) | Update any documentation files affected by the diff — changelogs, READMEs, API docs, guides. Only update what the diff actually changes; don't rewrite unrelated docs |
 
-## 5. Update AI guidelines (Laravel projects only)
-
-Check if an `.ai/guidelines/` directory exists in the project root. If it does not exist, skip this step silently.
-
-If it exists, examine the uncommitted diff (`git diff HEAD`) for any non-obvious project-specific decisions that future agents would not infer from standard Laravel patterns or existing guidelines. If you find anything worth recording, invoke the `laravel-guidelines` skill (that skill may ask you questions — answer them and continue), then run `artisan boost:install` to regenerate `CLAUDE.md`. If nothing qualifies, skip silently.
-
-## 6. Create an ADR (if applicable)
-
-Check if a directory for ADRs exists in the project (look for `docs/decisions/`, `docs/adr/`, or similar). If no such directory exists, skip this step silently.
-
-If it exists, examine the uncommitted diff (`git diff HEAD`) for architectural or significant design decisions that warrant an ADR. If you identify one, invoke the `adr` skill (that skill may ask you questions — answer them and continue). If nothing warrants an ADR, skip silently.
+If none of the directories exist, skip this section silently. If nothing in the diff qualifies for a given check, skip that row silently.
 
 ## 7. Commit uncommitted changes (if any)
 
@@ -56,7 +51,7 @@ Run `git status --short` (never `-uall`).
 If there are staged or unstaged changes (including any PLAN.md or ADR files from the steps above):
 - Run `git diff HEAD` to understand what changed
 - Stage relevant files by name (never `git add -A` or `git add .`); if `git diff HEAD` shows files that seem unrelated to the current task, flag them to the user before staging and ask whether to include them
-- Write a clear commit message and commit immediately (no confirmation needed)
+- Write a clear commit message and commit immediately — no confirmation needed, because the user invoking "ship it" / "wrap up" is the consent
 - Commit using the project's default git config (no co-author lines, no Claude attribution)
 
 ## 8. Push the branch
@@ -67,9 +62,9 @@ Check if the branch has a remote tracking branch and is ahead. Push with `-u ori
 
 Run `gh pr view --json number,title,url,headRefOid 2>/dev/null`.
 
-Branch on the result:
+Branch on the result (see `references/pr-update.md` for the ancestor check command):
 - **No PR exists** → go to step 10
-- **PR exists** → run `git merge-base --is-ancestor <headRefOid> HEAD && echo yes || echo no` (substituting the actual commit hash). If it prints `yes`, the PR belongs to this branch's history → go to step 11. If it prints `no`, the branch name was reused and this PR belongs to different work — go to step 10.
+- **PR exists** → run the ancestor check. If `yes`, the PR belongs to this branch's history → go to step 11. If `no`, the branch name was reused → go to step 10.
 
 ## 10. Create the PR
 
@@ -77,26 +72,7 @@ Gather context:
 - `git log main...HEAD --oneline` — all commits on this branch
 - `git diff main...HEAD` — full diff
 
-Write a PR title (under 70 chars) and body using this format:
-
-```
-## Summary
-- <bullet points covering what changed and why>
-
-## Test plan
-- <bulleted checklist of what to verify>
-```
-
-Do not add "Generated with Claude Code" or any mention of Claude/AI in the PR description. Create immediately (no confirmation needed):
-
-```
-gh pr create --title "..." --body "$(cat <<'EOF'
-...
-EOF
-)"
-```
-
-Then print the PR URL.
+Write a PR title (under 70 chars) and body using the format in `references/pr-update.md`. Create immediately — no confirmation needed. Then print the PR URL.
 
 ## 11. Update the existing PR
 
@@ -107,13 +83,4 @@ Gather context:
 - `git diff main...HEAD`
 - Current PR body: `gh pr view --json body -q .body`
 
-Rewrite the PR description to reflect the current state of the branch (same format as step 9). Update immediately (no confirmation needed):
-
-```
-gh pr edit --body "$(cat <<'EOF'
-...
-EOF
-)"
-```
-
-Then print the PR URL.
+Rewrite the PR description to reflect the current state of the branch (same format as step 10 — see `references/pr-update.md`). Update immediately — no confirmation needed. Then print the PR URL.

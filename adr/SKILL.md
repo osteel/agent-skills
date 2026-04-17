@@ -1,6 +1,6 @@
 ---
 name: adr
-description: Create architectural decision records in MADR format. Use when the user wants to document a technical decision, record an architecture choice, or create an ADR. Also invoke proactively after completing a significant architectural or design decision, even if the user hasn't explicitly asked for an ADR.
+description: Create architectural decision records in MADR format. Use when the user wants to document a technical decision, record an architecture choice, or create an ADR. Also invoke proactively after completing a significant architectural or design decision, even if the user hasn't explicitly asked for an ADR. For non-obvious project conventions (naming, patterns, framework quirks), use a project guidelines skill if one exists — ADRs are for decisions with context, alternatives, and rationale; guidelines are for terse conventions future agents need to follow.
 effort: medium
 ---
 
@@ -25,7 +25,7 @@ effort: medium
 
 6. **Create the file** at `docs/decisions/NNNN-kebab-case-title.md` only after approval, incorporating any requested changes. Create the directory if it doesn't exist.
 
-7. **Update superseded ADRs**: For each ADR this decision supersedes, edit it to set `Status: superseded` and fill in `Superseded by: NNNN - Title` with the new ADR's number and title.
+7. **Update superseded ADRs**: For each ADR this decision supersedes, edit it to set `Status: superseded` and fill in `Superseded by: NNNN - Title` with the new ADR's number and title. Keeping the superseded chain accurate is what makes the decision graph navigable — a stale status misleads future readers into thinking a replaced decision is still live.
 
 8. **Update the index**: If `docs/decisions/README.md` exists, read it first and append the new ADR in the same style as existing entries.
 

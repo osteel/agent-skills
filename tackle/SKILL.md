@@ -1,6 +1,6 @@
 ---
 name: tackle
-description: Pick up a task from the plan and drive it to completion — context gathering, planning, implementation, and the full post-implementation pipeline. Use when the user says things like "tackle X", "let's work on X", "implement X", or just "/tackle".
+description: Pick up a task from the plan and drive it to completion — context gathering, planning, implementation, and the full post-implementation pipeline. Use when the user says things like "tackle X", "let's work on X", "implement X", "start on X", "pick up X", "work through X", or just "/tackle".
 effort: max
 ---
 
@@ -9,6 +9,12 @@ effort: max
 **Arguments:** `$ARGUMENTS`
 
 Drive a task from identification through to a clean, reviewed, tested implementation.
+
+---
+
+## Resuming an in-progress tackle
+
+If the branch already has commits and a plan file exists, you're likely resuming. Read the plan file, check git log for what's done, and pick up from the first incomplete step. Ask the user to confirm before re-running any step that appears already complete.
 
 ---
 
@@ -111,45 +117,18 @@ Wait for the subagent to complete and report back. If it reports failures or blo
 
 ## Step 6: Post-implementation pipeline
 
-Run the following skills in order, each as a subagent. Run them sequentially — only start the next if the previous succeeded. If a step fails, resolve the failure before continuing.
+Run the following skills in order, each as a subagent. Run them sequentially — only start the next if the previous succeeded. Resolve failures before continuing.
 
-Skip steps that have explicit conditions, as noted.
-
-### 6.1 `/simplify`
-
-**Condition:** Only run if the `simplify` skill is available (global skill or project skill).
-
-Invoke the `simplify` skill. Wait for it to complete.
-
-### 6.2 `/polish`
-
-**Condition:** Only run if the implementation involved UI, design, or UX changes (new views, updated layouts, component changes, CSS/Tailwind).
-
-Invoke the `polish` skill. Wait for it to complete.
-
-### 6.3 `/review`
-
-Invoke the `review` skill. Wait for it to complete.
-
-### 6.4 `/test`
-
-Invoke the `test` skill. Wait for it to complete. Fix any failures before moving on.
-
-### 6.5 `/cover`
-
-Invoke the `cover` skill. Wait for it to complete.
-
-### 6.6 `/analyse`
-
-Invoke the `analyse` skill. Wait for it to complete. Fix any issues before moving on.
-
-### 6.7 `/finalise`
-
-Invoke the `finalise` skill. Wait for it to complete.
-
-### 6.8 `/wrap-up`
-
-Invoke the `wrap-up` skill. Wait for it to complete.
+| Step | Skill | Condition | On failure |
+|------|-------|-----------|------------|
+| 6.1 | `simplify` | Only if available (global or project skill) | Fix, then continue |
+| 6.2 | `polish` | Only if implementation touched UI/UX (views, layouts, CSS/Tailwind) | Fix, then continue |
+| 6.3 | `review` | Always | Fix critical/major findings, then continue |
+| 6.4 | `test` | Always | Fix failures before moving on |
+| 6.5 | `cover` | Always | Add missing tests, then continue |
+| 6.6 | metrics | If the project exposes tooling for code quality, performance, or other metrics (e.g. an `/analyse` skill, linters, profilers), run them; otherwise skip | Fix issues before moving on |
+| 6.7 | `finalise` | Always | Fix, then continue |
+| 6.8 | `wrap-up` | Always | Resolve blockers before completing |
 
 ---
 

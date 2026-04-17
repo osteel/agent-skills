@@ -1,6 +1,6 @@
 ---
 name: ui-rules
-description: Apply high-signal visual design principles for UI work. Use by default when designing UI from scratch or when reviewing, refining, or polishing existing interfaces, including colour, layout, spacing, typography, depth, and components.
+description: Apply high-signal visual design principles for UI work. Use by default when designing UI from scratch or when reviewing, refining, or polishing existing interfaces, including colour, layout, spacing, typography, depth, and components. Covers how the UI *looks* — for how it *works* (usability, accessibility, interaction flows), also invoke `ux-principles`.
 user-invocable: false
 ---
 
@@ -45,7 +45,7 @@ If the task involves how something **looks**, this skill applies.
 - Avoid pure black (`#000`) and pure white (`#fff`). Use near-black and near-white.
 - Tint neutrals slightly toward a single hue if using colour at all.
 - Reserve the highest contrast for primary actions and key content.
-- Keep structural elements (dividers, borders, shadows) low contrast.
+- Keep structural elements (dividers, borders, shadows) low contrast. High-contrast structural elements fight for attention with the content they're meant to organise.
 - Ensure palette colours differ in brightness, not just hue.
 - Do not mix warm-tinted and cool-tinted neutrals.
 
@@ -73,9 +73,9 @@ If the task involves how something **looks**, this skill applies.
   - Dark UI: ≤ 12% brightness difference
   - Light UI: ≤ 7% brightness difference
 - Avoid stacked hard divides (e.g. background change + border + divider).
-- Do not use shadows in dark mode.
+- Do not use shadows in dark mode. Shadows simulate light falling on a surface — they look physically wrong on dark UIs that have no implied light source.
 - Use only one depth technique across the UI.
-- If using shadows, set blur to 2× the vertical offset.
+- If using shadows, set blur to 2× the vertical offset. This ratio keeps shadows soft and natural; lower values produce hard-edged, artificial-looking shadows.
 
 ---
 
@@ -118,16 +118,13 @@ If the task involves how something **looks**, this skill applies.
 
 ## Response structure for UI tasks
 
-When responding to UI design work, structure output as:
+For multi-screen or design-system work, structure output as:
 
-1. **System decisions**  
-   Mode, palette approach, spacing and typography scales, depth system.
+1. **System decisions** — mode, palette approach, spacing and typography scales, depth system.
+2. **Layout or component application** — how the rules are applied in practice.
+3. **Concrete implementation notes** — specific token values or CSS/Tailwind guidance, if implementation is requested.
 
-2. **Layout or component application**  
-   How the rules are applied in practice.
-
-3. **Concrete implementation notes**  
-   Specific token values or CSS/Tailwind guidance, if implementation is requested.
+For single-component or small-scope tasks, skip the system section and go straight to what changed and why.
 
 ---
 

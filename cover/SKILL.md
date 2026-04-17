@@ -1,6 +1,6 @@
 ---
 name: cover
-description: Identify and add tests for recent code changes. Use when the user says things like "add some tests", "make sure this is tested", "we need tests for this", or after completing a feature or fix. Invoke proactively when significant new behavior has been added without tests.
+description: Identify and add tests for recent code changes. Use when the user says things like "add some tests", "make sure this is tested", "we need tests for this", or after completing a feature or fix. Invoke proactively when significant new behavior has been added without tests. Distinct from `pyramid` (which audits the full test suite for structural issues) — cover is scoped to what was just changed.
 effort: medium
 ---
 
@@ -30,29 +30,11 @@ Review the feature or changes we've been working on in this session and all unco
 
 ### Step 2: Analyze Test Coverage Needs
 
-For each modified file, consider:
+For each modified file, consider what matters vs. what doesn't:
 
-1. **New functionality**:
-   - New functions/methods that don't have tests
-   - New code paths or branches
-   - New error handling
+**Test**: new/changed logic and code paths, error handling, edge cases, integration points, complex conditionals, data transformations.
 
-2. **Changed behavior**:
-   - Modified logic that existing tests don't cover
-   - Edge cases introduced by the changes
-   - Integration points with other components
-
-3. **Risk areas**:
-   - Complex conditional logic
-   - Data transformations
-   - External service interactions (mock candidates)
-   - Error scenarios and edge cases
-
-4. **What NOT to test**:
-   - Simple getters/setters
-   - Framework-provided functionality
-   - Code that's already well-tested
-   - Trivial one-liners
+**Skip**: simple getters/setters, framework-provided functionality, already-covered code, trivial one-liners.
 
 ### Step 3: Check Existing Tests
 
@@ -82,7 +64,8 @@ For each gap identified:
 
 1. **Run the new tests** to ensure they pass
 2. **Run the affected test files**, then the full test suite if feasible
-3. **Intentionally break the code** to verify tests catch it (then revert)
+3. **Intentionally break the code** to verify tests catch it (then revert). This mutation check is the only reliable way to confirm a test actually covers the code path it claims to — a passing test that doesn't catch breakage is worse than no test.
+4. **Run the full suite** via the `test` skill if it hasn't been run yet.
 
 ### Step 6: Summary
 
@@ -90,7 +73,6 @@ Report back with:
 - Tests added (file and test names)
 - What behavior is now covered
 - Any gaps that couldn't be easily tested (and why)
-- Any gaps in the current changes that couldn't be easily tested (and why)
 
 ## Important
 

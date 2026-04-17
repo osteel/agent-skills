@@ -1,6 +1,6 @@
 ---
 name: laravel-layered-architecture
-description: Enforces layered architecture in Laravel projects with domain layer isolation, dependency direction rules, and layer responsibilities. Use when creating new classes, moving code between layers, or reviewing architecture.
+description: Enforces layered architecture in Laravel projects with domain layer isolation, dependency direction rules, and layer responsibilities. Use when creating new classes (Services, Actions, Repositories, ValueObjects, Aggregates), moving code between layers, or reviewing architecture in a project with a `domain/src/` directory. Invoke automatically whenever a new class is being placed and the project has this layered structure.
 user-invocable: false
 ---
 
@@ -24,9 +24,9 @@ Implements domain interfaces. Framework adapters, persistence, external service 
 
 Strict top-down only: Presentation -> Application -> Domain <- Infrastructure.
 
-- Domain depends on nothing. No `use App\...` or `use Illuminate\...` in `domain/src/`.
+- Domain depends on nothing (no `use App\...` or `use Illuminate\...` in `domain/src/`). This keeps the core business logic testable without booting the framework and makes it portable if the framework ever changes.
 - Application depends on domain, never on presentation.
-- Infrastructure implements domain interfaces (dependency inversion).
+- Infrastructure implements domain interfaces (dependency inversion). The domain defines what it needs; infrastructure decides how to fulfil it.
 - Presentation depends on application services, never directly on domain aggregates.
 
 ## Domain Layer Rules
@@ -35,7 +35,7 @@ Strict top-down only: Presentation -> Application -> Domain <- Infrastructure.
 - Tests live in `domain/tests/`.
 - Internal structure mirrors bounded contexts or aggregate roots: `domain/src/Aggregates/ContextName/`.
 - Each aggregate context contains: Actions (commands), Events, Entities, ValueObjects, Services, Repositories (interfaces), Exceptions.
-- Value objects are immutable. Enforce invariants in constructors/factory methods.
+- Value objects are immutable. Enforce invariants in constructors/factory methods. Immutability means callers can share and cache them safely without defensive copying.
 - Domain services contain logic that doesn't belong to a single aggregate.
 - Repository interfaces live in the domain. Implementations live in `app/`.
 

@@ -1,12 +1,12 @@
 ---
 name: laravel-guidelines
-description: Manages project-specific AI guidelines in `.ai/guidelines/` for Laravel projects. Use when the user wants to record, update, or remove a non-obvious project convention, architectural decision, or tricky detail that agents wouldn't infer from standard Laravel patterns or CLAUDE.md. Also activate automatically after completing any Laravel implementation task that introduced new models, services, jobs, observers, or non-standard behaviour — to capture decisions future agents wouldn't easily infer.
+description: Manages project-specific AI guidelines in `.ai/guidelines/` for Laravel projects. Use when the user says things like "record a convention", "note this for future agents", "document this pattern", or wants to record, update, or remove a non-obvious project convention, or tricky detail that agents wouldn't infer from standard Laravel patterns or CLAUDE.md. Also activate automatically after completing any Laravel implementation task that introduced new models, services, jobs, observers, or non-standard behaviour — to capture decisions future agents wouldn't easily infer. For formal architectural decisions with context, alternatives, and rationale, use the `adr` skill instead — guidelines are for terse, agent-facing conventions, not decision records.
 effort: medium
 ---
 
 # Laravel Guidelines Manager
 
-After completing a Laravel implementation task, or when explicitly asked, review whether any non-obvious decisions were made that future agents would not easily infer. If nothing qualifies, do nothing and briefly say so.
+After completing a Laravel implementation task that introduced something non-standard, or when explicitly asked, review whether any non-obvious decisions were made that future agents would not easily infer. Apply the three-criteria filter below strictly — most tasks produce nothing worth recording. If nothing qualifies, do nothing and briefly say so.
 
 ## What belongs in guidelines
 

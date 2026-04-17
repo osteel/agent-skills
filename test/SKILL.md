@@ -1,6 +1,6 @@
 ---
 name: test
-description: Run the test suite and fix any failures. Use after writing or changing code, when tests are failing, or when the user asks to run tests, check tests, or make tests pass.
+description: Run the test suite and fix any failures. Use after writing or changing code, when tests are failing, or when the user asks to run tests, check tests, or make tests pass. When the user only asks to "run tests" (not "fix" or "make them pass"), run the suite and report — don't auto-fix without confirmation.
 effort: medium
 ---
 
@@ -22,24 +22,11 @@ effort: medium
 
 ## Phase 2: Diagnose Failures
 
-For each failing test:
+For each failing test, start by running just the failing test(s) in isolation — this is faster and gives a cleaner signal than re-running the full suite on every diagnosis loop.
 
-1. **Identify the failure type**:
-   - Assertion failure (expected vs actual mismatch)
-   - Runtime error (exception, crash)
-   - Timeout
-   - Missing dependency/setup
-   - Flaky test (passes sometimes)
+1. **Locate the relevant code**: the test file, the source being tested, and any fixtures or mocks.
 
-2. **Locate the relevant code**:
-   - The test file and specific test case
-   - The source code being tested
-   - Any fixtures or mocks involved
-
-3. **Determine the root cause**:
-   - Is the test wrong (outdated expectations)?
-   - Is the code wrong (bug)?
-   - Is the environment wrong (missing setup)?
+2. **Determine the root cause**: is the test wrong (outdated expectations), the code wrong (bug), or the environment wrong (missing setup)?
 
 ## Phase 3: Fix Failures
 

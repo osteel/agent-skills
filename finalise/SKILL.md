@@ -1,6 +1,6 @@
 ---
 name: finalise
-description: Clean up completed feature work — remove dead code, false starts, and over-engineering from iteration. Use when the user says things like "clean this up", "tidy this", "remove the dead code", or "let's clean up before the PR".
+description: Clean up completed feature work — remove dead code, false starts, and over-engineering from iteration. Use when the user says things like "clean this up", "tidy this", "remove the dead code", or "let's clean up before the PR". Also invoke proactively after completing a feature, before handing off to `wrap-up`. Distinct from `wrap-up` (which commits, documents, and opens a PR) and `simplify` (which refactors for quality) — finalise is strictly about removing iteration debris from recent work.
 effort: max
 ---
 
@@ -32,28 +32,11 @@ Clean up the feature or refactor we've been working on in this session, or all u
 
 Look for these patterns in the files we touched:
 
-1. **False starts**: Code that was written as part of an abandoned approach
-   - Commented-out alternative implementations
-   - Functions/methods that were superseded by a better approach
-   - Imports that are no longer needed
-
-2. **Experimental remnants**:
-   - Debug logging/console statements added during development
-   - Temporary variables or flags used for testing approaches
-   - Hardcoded test values that should be parameterised
-
-3. **Duplicated logic**:
-   - Multiple ways of doing the same thing where we settled on one
-   - Copy-pasted code that can now be consolidated
-
-4. **Naming inconsistencies**:
-   - Variables/functions named for the first approach that no longer fit
-   - Misleading names from when the implementation was different
-
-5. **Over-engineering from iteration**:
-   - Abstractions added "just in case" that aren't needed
-   - Configuration options that will never vary
-   - Extra parameters that always have the same value
+- **False starts**: commented-out alternatives, superseded functions, unused imports
+- **Experimental remnants**: debug logging, temporary flags, hardcoded test values
+- **Duplicated logic**: multiple approaches where we settled on one
+- **Naming inconsistencies**: variables/functions named for the first approach that no longer fit
+- **Over-engineering**: "just in case" abstractions, options that never vary, extra parameters always passed the same value
 
 ### Step 3: Clean Up
 
