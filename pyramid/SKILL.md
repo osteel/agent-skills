@@ -74,6 +74,16 @@ These are strong candidates for parameterised/data-driven tests. Two near-identi
 
 Check whether the same behaviour is tested in multiple files at the same layer. Flag these — keep the one with the more precise assertions, remove the other.
 
+### Folder structure
+
+Compare the test folder structure to the application source structure.
+
+**When the app has a clear folder structure** (e.g. `app/Services/`, `src/Domain/`, `app/Http/Controllers/`): test files should mirror it. A test for `app/Services/PaymentService.php` should live at `tests/Unit/Services/PaymentServiceTest.php`, not at `tests/Unit/PaymentServiceTest.php` or scattered elsewhere. Flag any test file whose location doesn't reflect its subject's location in the app.
+
+**When the app has no obvious structure to mirror**: check instead that tests are organised coherently — grouped by domain concept, layer, or feature rather than dumped in a flat directory. Flag files that seem arbitrarily placed or that would be hard to find given their subject matter.
+
+Don't flag files that follow a legitimate project convention even if it differs from the app structure — look for evidence of intent before calling something a problem.
+
 ## Phase 3: Report
 
 Present findings before touching anything.
@@ -107,6 +117,10 @@ Could become: one parameterised test with N cases
 [File A] > [test] duplicates [File B] > [test]
 Keep: [which one and why]
 
+#### 5. Folder structure mismatches (N files)
+[Current path] → [Proposed path]
+Reason: [what app path it mirrors, or why the current location is confusing]
+
 ### Not changing
 [Brief note on what was reviewed and left alone — so the user knows it was considered]
 
@@ -124,8 +138,9 @@ Wait for a response before touching any files.
 Apply only the approved changes. Work in this order to keep the suite green throughout:
 
 1. **Move tests to a faster layer** — create files in the new location, delete the originals. Adjust any infrastructure dependencies (remove database setup traits if the test no longer needs them, adjust imports).
-2. **Add datasets** — consolidate repeated tests into parameterised equivalents.
-3. **Remove redundant browser/e2e tests** — edit files to remove the identified tests. Delete the file if it becomes empty.
+2. **Reorganise folder structure** — move files to their correct paths, creating subdirectories as needed. Update any references (autoloading, imports, CI config) that pointed to the old paths.
+3. **Add datasets** — consolidate repeated tests into parameterised equivalents.
+4. **Remove redundant browser/e2e tests** — edit files to remove the identified tests. Delete the file if it becomes empty.
 
 After each change, run the affected tests to confirm they still pass. Run the full suite at the end.
 
@@ -144,4 +159,5 @@ Run any project linters or formatters on changed files. Then re-run the suite (o
 - **Don't move a test just because it *could* run without its layer's infrastructure.** If the project has a strong convention (e.g. "unit tests are pure, no framework") respect it — flag the test as DB-free if useful, but don't force a move that would break the convention.
 - **Don't consolidate datasets across files** — keep each file self-contained.
 - **Don't expand scope** — only audit the test suite, not the application code.
+- **Don't reorganise for its own sake** — only flag folder structure mismatches where the current location is genuinely confusing or inconsistent with the rest of the suite. A flat structure is fine if the project is small and the suite is easy to navigate.
 - **Flag rather than guess** — if a test's dependencies are ambiguous, say so in the report instead of making an assumption.

@@ -12,13 +12,22 @@ effort: medium
 
 2. **Gather context**: Gather context from the current conversation first. Only ask if the decision and considered options aren't already clear.
 
-3. **Draft the ADR**: Write the full ADR content using the template below and present it to the user as a markdown code block. Do NOT create any file yet.
+3. **Review existing ADRs**: Read all existing ADR files and check whether any are related to this new decision:
+   - **Superseded**: an existing ADR that this decision fully replaces (e.g. the new decision reverses or obsoletes the old one). Note the ADR number and title — the new ADR will supersede it, and the old one will need its status updated.
+   - **Extended**: an existing ADR this decision builds on or narrows without replacing it entirely. Note it for the "Related" field.
+   - **Conflicting**: an existing ADR that appears to contradict this decision. Flag it to the user before drafting.
 
-4. **Wait for approval**: Ask the user to review the draft and confirm or request changes before proceeding. Do not create the file until the user explicitly approves.
+   If no existing ADRs are related, proceed without comment.
 
-5. **Create the file** at `docs/decisions/NNNN-kebab-case-title.md` only after approval, incorporating any requested changes. Create the directory if it doesn't exist.
+4. **Draft the ADR**: Write the full ADR content using the template below and present it to the user as a markdown code block. Populate "Supersedes" and "Related" fields if applicable. Do NOT create any file yet.
 
-6. **Update the index**: If `docs/decisions/README.md` exists, read it first and append the new ADR in the same style as existing entries.
+5. **Wait for approval**: Ask the user to review the draft and confirm or request changes before proceeding. If any existing ADRs will be superseded or updated, list them explicitly so the user knows what else will change. Do not create or edit any file until the user explicitly approves.
+
+6. **Create the file** at `docs/decisions/NNNN-kebab-case-title.md` only after approval, incorporating any requested changes. Create the directory if it doesn't exist.
+
+7. **Update superseded ADRs**: For each ADR this decision supersedes, edit it to set `Status: superseded` and fill in `Superseded by: NNNN - Title` with the new ADR's number and title.
+
+8. **Update the index**: If `docs/decisions/README.md` exists, read it first and append the new ADR in the same style as existing entries.
 
 ## Template
 
@@ -26,7 +35,9 @@ effort: medium
 # NNNN - Title
 
 - **Status**: proposed
-- **Superseded by**: <!-- only if status is superseded -->
+- **Supersedes**: <!-- NNNN - Title, only if this ADR replaces a previous one -->
+- **Superseded by**: <!-- NNNN - Title, only if this ADR is later replaced -->
+- **Related**: <!-- NNNN - Title, only if this ADR extends or relates to another -->
 - **Date**: YYYY-MM-DD
 
 ## Context and Problem Statement
@@ -77,3 +88,5 @@ Chosen option: "[Option X]", because [1-2 sentence justification].
 - Don't create ADRs for trivial choices that don't warrant documentation.
 - Don't use status values other than: proposed, accepted, deprecated, superseded.
 - When marking an ADR as superseded, always fill in "Superseded by" with the number and title of the replacing ADR.
+- Don't leave superseded ADRs stale — always update the old ADR's status and "Superseded by" field in the same step as creating the new one.
+- Don't mark an ADR as "Related" just because it touches the same area — only use it when there's a meaningful dependency or extension relationship.

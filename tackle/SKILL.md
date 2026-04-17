@@ -12,15 +12,7 @@ Drive a task from identification through to a clean, reviewed, tested implementa
 
 ---
 
-## Step 1: Branch guard
-
-Run `git branch --show-current`.
-
-If the branch is `main` or `master`, stop immediately. Tell the user they must create a branch before tackling any task. Suggest a sensible branch name based on `$ARGUMENTS` or recent context, and wait for them to act before continuing.
-
----
-
-## Step 2: Identify the task
+## Step 1: Identify the task
 
 ### If `$ARGUMENTS` is non-empty
 
@@ -37,36 +29,70 @@ Ask the user: "What task would you like to tackle?" Wait for their response, the
 
 ---
 
-## Step 3: Context gathering and planning (subagent)
+## Step 2: Context gathering and planning
 
-Delegate Steps 3 and 4 to a subagent using the Agent tool with the most capable model available. Pass it:
+### 2.1 Context gathering (subagent)
+
+Delegate context gathering to a subagent using the Agent tool with the most capable model available. Pass it:
 
 - The task description
 - The plan file contents (if found)
 - Any conversation context needed to understand the task
 
-The subagent should:
+The subagent should read everything needed to understand the task fully:
 
-1. Gather everything needed to understand the task fully:
-   - Relevant ADRs — scan `docs/decisions/` or `docs/adr/` filenames, read the ones related to the task
-   - Relevant spec/product docs — any `SPEC.md`, `PRD.md`, or equivalent
-   - Source files directly related to the task (models, controllers, services, tests, views — whatever applies)
+- Relevant ADRs — scan `docs/decisions/` or `docs/adr/` filenames, read the ones related to the task
+- Relevant spec/product docs — any `SPEC.md`, `PRD.md`, or equivalent
+- Source files directly related to the task (models, controllers, services, tests, views — whatever applies)
 
-2. Return a concise implementation plan covering:
-   - What will be created or changed (files, classes, DB schema, etc.)
-   - Key decisions or trade-offs
-   - Any risks or unknowns
-   - Any clarifying questions that must be answered before implementation can begin
+The subagent should return the gathered context — key excerpts, file paths, and any observations relevant to planning — but not produce a plan itself.
 
-Wait for the subagent to return its plan and any questions.
+Wait for the subagent to return before continuing.
+
+### 2.2 Planning (main agent, plan mode)
+
+Using the gathered context, enter plan mode and write a concise implementation plan covering:
+
+- What will be created or changed (files, classes, DB schema, documentation, etc.)
+- Key decisions or trade-offs
+- Any risks or unknowns
+- Any clarifying questions that must be answered before implementation can begin
 
 ---
 
-## Step 4: Refine and approve the plan
+## Step 3: Refine and approve the plan
 
 Present the plan and any questions from the planning subagent to the user. Answer questions and incorporate feedback. If the user requests changes, relay them to the subagent (or revise directly if minor) and re-present.
 
 Repeat until the user approves the plan.
+
+---
+
+## Step 4: Branch setup
+
+Run `git branch --show-current`.
+
+### If on `main` or `master`
+
+Suggest a branch name derived from the approved plan and task description (kebab-case, concise, e.g. `add-email-validation`). Then ask:
+
+> I suggest the branch name `<name>`. Shall I create it? If you'd prefer a different name, enter it below and I'll create that instead.
+
+Wait for the user's response, then run `git checkout -b <branch>` with the confirmed or provided name before continuing.
+
+### If on a feature branch
+
+Run the following checks in parallel:
+
+1. **Committed work** — `git log main..HEAD --oneline` (or `master..HEAD`). Any output means commits exist on this branch.
+2. **Open PR** — `gh pr list --head <branch> --state open`.
+3. **Closed/merged PR** — `gh pr list --head <branch> --state closed`.
+
+If any check returns results, warn the user with a summary of what was found, e.g.:
+
+> This branch already has 3 commits, an open PR (#42), and a previously closed PR (#17). Proceeding will add implementation work on top of the existing state. Are you sure you want to continue?
+
+Wait for explicit confirmation before proceeding. If the user declines, stop and let them sort out the branch situation first.
 
 ---
 
@@ -76,7 +102,7 @@ Delegate the full implementation to a subagent using the Agent tool. Use the fas
 
 - The approved implementation plan
 - The task description
-- All relevant context gathered in Step 3 (plan file, ADRs, spec excerpts, key source files)
+- All relevant context gathered in Step 2 (plan file, ADRs, spec excerpts, key source files)
 - The contents of `CLAUDE.md`
 
 Wait for the subagent to complete and report back. If it reports failures or blockers, resolve them before continuing.

@@ -4,7 +4,7 @@ description: Wraps up completed work — use when the user says things like "shi
 effort: high
 ---
 
-Follow these steps in order. Do not skip steps.
+Follow these steps in order. Skip only where a step explicitly permits it.
 
 ## 1. Check the current branch
 
@@ -14,7 +14,11 @@ If the branch is `main` or `master`, stop and tell the user they're on the main 
 
 ## 2. Run the test suite
 
-Invoke the `test` skill. If all tests pass, continue. If any fail, stop and resolve them before proceeding.
+First, check whether a test run is necessary:
+
+- Run `git status --short` and `git diff HEAD --name-only`.
+- If there are no uncommitted changes, or all changes are to documentation or configuration files only (e.g. `.md` files, `PLAN.md`, ADR files, guidelines, lock files), skip this step — the suite was already passing and nothing that could affect tests has changed.
+- If there are uncommitted changes to source or test files, invoke the `test` skill. If all tests pass, continue. If any fail, stop and resolve them before proceeding.
 
 ## 3. Check for PLAN.md
 
@@ -65,7 +69,7 @@ Run `gh pr view --json number,title,url,headRefOid 2>/dev/null`.
 
 Branch on the result:
 - **No PR exists** → go to step 10
-- **PR exists** → run `git merge-base --is-ancestor <headRefOid> HEAD` (substituting the actual commit hash). If it exits 0, the PR belongs to this branch's history → go to step 11. If it exits non-zero, the branch name was reused and this PR belongs to different work — go to step 10.
+- **PR exists** → run `git merge-base --is-ancestor <headRefOid> HEAD && echo yes || echo no` (substituting the actual commit hash). If it prints `yes`, the PR belongs to this branch's history → go to step 11. If it prints `no`, the branch name was reused and this PR belongs to different work — go to step 10.
 
 ## 10. Create the PR
 
