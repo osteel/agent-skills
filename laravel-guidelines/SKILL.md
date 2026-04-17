@@ -12,7 +12,7 @@ After completing a Laravel implementation task that introduced something non-sta
 
 Only record details that are **all three** of:
 - Project-specific (not standard Laravel convention)
-- Not already covered in an existing `.ai/guidelines/` file, and not already covered in any `CLAUDE.md` content that is *not* sourced from `.ai/guidelines/`
+- Not already covered in an existing `.ai/guidelines/` file, in any `CLAUDE.md` content that is *not* sourced from `.ai/guidelines/`, or in any agent rules files (`.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, etc.)
 - Something an agent would only discover through deep codebase analysis — not something guessable
 
 **Important:** `CLAUDE.md` is partially generated from `.ai/guidelines/` via `artisan boost:install`, but may also contain hand-written content. Do not treat `.ai/guidelines/` content appearing in `CLAUDE.md` as a reason to remove it — that duplication is expected. Only avoid recording something that is already covered in the hand-written portion of `CLAUDE.md` (content not sourced from `.ai/guidelines/`).
@@ -25,13 +25,13 @@ Examples of what qualifies:
 
 Examples of what does NOT qualify:
 - Standard Eloquent patterns, relationship types, casting
-- Anything already in `.ai/guidelines/` or in the hand-written sections of `CLAUDE.md`
+- Anything already in `.ai/guidelines/`, in the hand-written sections of `CLAUDE.md`, or in agent rules files
 - Implementation details that are self-documenting in the code
 
 ## Process
 
 1. Check whether `.ai/guidelines/` exists in the project root. If not, and guidelines are warranted, create it.
-2. Read all existing `.md` files in `.ai/guidelines/`.
+2. Read all existing `.md` files in `.ai/guidelines/`, and any agent rules files present (`.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, etc.) to avoid duplicating what's already captured there.
 3. Decide: does the new information belong in an existing file, warrant a new file, or require removing/amending a stale entry? If nothing qualifies, stop here.
 4. Make the minimum necessary change — add, amend, or delete. Do not rewrite files wholesale.
 5. Keep every entry as short as possible. One line per rule where possible.
