@@ -119,7 +119,7 @@ Wait for explicit confirmation before proceeding. If the user declines, stop and
 
 ## Step 5: Implementation (subagent)
 
-Delegate the full implementation to a subagent using the Agent tool. Use the fastest capable model available for this subagent — implementation does not require a planning-grade model. Pass it:
+Delegate the full implementation to a subagent using the Agent tool. Use the default-tier model for this subagent — implementation does not require a planning-grade model. Pass it:
 
 - The approved implementation plan
 - The task description
@@ -134,14 +134,43 @@ Wait for the subagent to complete and report back. If it reports failures or blo
 
 Run the following skills in order, each as a subagent. Run them sequentially — only start the next if the previous succeeded. Resolve failures before continuing.
 
+**How to read this table — read before any substep.** The Subagent and Model columns map directly to Agent tool parameters; they are not advisory.
+
+- **Subagent = Yes** → an actual Agent tool call with `subagent_type`. Never run the substep inline in the main thread, even if the work feels small.
+- **Subagent = No / —** → run in the main thread (no Agent call).
+- **Model = Best available** → pass `model` to the Agent call set to whichever model the system identifies as the most capable currently running.
+- **Model = Default tier** → pass `model` to the Agent call set to the system's standard workhorse model — not the smallest/cheapest tier. If two candidates seem to fit, pick the more capable one.
+- **Model = —** → no `model` argument needed (only valid for "No" subagent rows).
+
+Omitting the `model` argument on a subagent call, or running a "Yes" row inline, is treated the same as skipping the step. It is a skill violation, not a shortcut.
+
+### Pre-flight enumeration
+
+Before invoking anything, write out each substep explicitly, resolving the abstract tier labels ("Best available", "Default tier") to concrete model names:
+
+```
+- 6.1 simplify   → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.2 polish     → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.3 review     → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.4 test       → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.5 cover      → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.6 analyse    → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.7 finalise   → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+- 6.8 wrap-up    → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
+```
+
+This locks the bindings before any Agent call is made; the user can spot a mis-translation here rather than after the fact.
+
+### Pipeline reference
+
 | Step | Skill | Subagent | Model | Condition | On failure |
 |------|-------|----------|-------|-----------|------------|
-| 6.1 | `simplify` | Yes | Fastest capable | Only if available (global or project skill) | Fix, then continue |
+| 6.1 | `simplify` | Yes | Default tier | Only if available (global or project skill) | Fix, then continue |
 | 6.2 | `polish` | Yes | Best available | Only if implementation touched UI/UX (views, layouts, CSS/Tailwind) | Fix, then continue |
 | 6.3 | `review` | Yes | Best available | Always | Fix critical/major findings, then continue |
-| 6.4 | `test` | Yes | Fastest capable | Always | Fix failures before moving on |
+| 6.4 | `test` | Yes | Default tier | Always | Fix failures before moving on |
 | 6.5 | `cover` | Yes | Best available | Always | Add missing tests, then continue |
-| 6.6 | `analyse` | Yes | Fastest capable | If the project exposes an `/analyse` skill, run it; otherwise check for linters or profilers and run those; skip if none exist | Fix issues before moving on |
+| 6.6 | `analyse` | Yes | Default tier | If the project exposes an `/analyse` skill, run it; otherwise check for linters or profilers and run those; skip if none exist | Fix issues before moving on |
 | 6.7 | `finalise` | Yes | Best available | Always | Fix, then continue |
 | 6.8 | `wrap-up` | No | — | Always | Resolve blockers before completing |
 
@@ -155,3 +184,13 @@ Once `/wrap-up` completes, report back to the user with a brief summary:
 - Any notable decisions made
 - PR URL (from `/wrap-up`)
 - A table of which model was used for each step (planning, implementation, and each pipeline skill)
+
+### Hand-off: stop modifying the branch
+
+After the PR URL is reported, the user reviews it manually. Until the user explicitly asks for more work on this task:
+
+- **Do not** make further code changes, commits, amends, force-pushes, rebases, or branch operations
+- **Do not** push additional commits to the branch or update the PR
+- **Do not** treat follow-up work as implied — wait for an explicit instruction (e.g. "address the review comments", "push a fix for X", "fold in Y")
+
+You may still answer questions, explain the diff, or discuss the PR. If you notice something that looks worth changing, mention it and wait for the user to decide; don't act on it. This applies even in auto / continuous-execution modes — the manual-review hand-off overrides the default "keep going" bias.
