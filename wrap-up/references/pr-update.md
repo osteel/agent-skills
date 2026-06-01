@@ -6,6 +6,8 @@
 
 ## Test plan
 - <bulleted checklist of what to verify>
+
+Fixes #<N>   <!-- only when the branch name starts with "<N>-" and the issue exists & is open; omit the line entirely otherwise -->
 ```
 
 Do not add "Generated with Claude Code" or any mention of Claude/AI.

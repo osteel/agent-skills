@@ -16,22 +16,26 @@ Drive a task from identification through to a clean, reviewed, tested implementa
 
 If the branch already has commits and a plan file exists, you're likely resuming. Read the plan file, check git log for what's done, and pick up from the first incomplete step. Ask the user to confirm before re-running any step that appears already complete.
 
+If the current branch name matches `^\d+-` and `gh` is available, treat the leading number as a GitHub issue reference and fetch it (`gh issue view <N> --json number,title,body,labels,state`) for additional context. If the issue isn't found, ignore silently — the prefix may be coincidental.
+
 ---
 
 ## Step 1: Identify the task
 
 ### If `$ARGUMENTS` is non-empty
 
-1. Search for a plan file. Look for `PLAN.md`, `plan.md`, or any `*.md` file whose name suggests a project plan (glob `**/PLAN.md`, `**/plan.md`). If found, read it.
+1. **GitHub issue check.** If `$ARGUMENTS` is a bare number (e.g. `42`) or starts with `#` (e.g. `#42`), and `gh` is available, treat it as a GitHub issue reference. Run `gh issue view <N> --json number,title,body,labels,state` and use the issue title + body as the task description. Quote the title so it's clear what was picked up. Skip the plan-file lookup in this case — the issue is the source of truth.
 
-2. Determine whether `$ARGUMENTS` refers to something in the plan:
+2. Otherwise, search for a plan file. Look for `PLAN.md`, `plan.md`, or any `*.md` file whose name suggests a project plan (glob `**/PLAN.md`, `**/plan.md`). If found, read it.
+
+3. Determine whether `$ARGUMENTS` refers to something in the plan:
    - If it matches a specific phase, task, or item in the plan (by ID, heading, or description), use that plan entry as the task description. Quote the relevant section so it's clear what was matched.
    - If it doesn't match anything in the plan but reads as a clear, self-contained description (e.g. "add email validation to the registration form"), treat it as the task description directly.
    - If it's ambiguous — matches nothing and isn't self-explanatory — tell the user what you found (or didn't find) and ask them to clarify.
 
 ### If `$ARGUMENTS` is empty
 
-Ask the user: "What task would you like to tackle?" Wait for their response, then treat it as the task description and continue from the plan lookup above.
+Ask the user: "What task would you like to tackle? (You can also pass a GitHub issue number, e.g. `/tackle 42`.)" Wait for their response, then treat it as the task description and continue from the issue/plan lookup above.
 
 ---
 
@@ -95,7 +99,7 @@ Run `git branch --show-current`.
 
 ### If on `main` or `master`
 
-Suggest a branch name derived from the approved plan and task description (kebab-case, concise, e.g. `add-email-validation`). Then ask:
+Suggest a branch name derived from the approved plan and task description (kebab-case, concise, e.g. `add-email-validation`). If the task came from a GitHub issue, prefix the slug with the issue number (e.g. `42-add-email-validation`) — `wrap-up` uses this prefix to add `Fixes #N` to the PR body. Then ask:
 
 > I suggest the branch name `<name>`. Shall I create it? If you'd prefer a different name, enter it below and I'll create that instead.
 
@@ -132,65 +136,10 @@ Wait for the subagent to complete and report back. If it reports failures or blo
 
 ## Step 6: Post-implementation pipeline
 
-Run the following skills in order, each as a subagent. Run them sequentially — only start the next if the previous succeeded. Resolve failures before continuing.
+Invoke the `pipeline` skill (Skill tool, name `pipeline`) to run the full quality pipeline through to a PR. Pass it a brief so its subagents judge against intent and its final report is complete:
 
-**How to read this table — read before any substep.** The Subagent and Model columns map directly to Agent tool parameters; they are not advisory.
+- the task description and the approved plan,
+- the context gathered in Step 2 (ADRs, spec excerpts, key files),
+- the models already used upstream — planning (best available, Steps 2.1/2.2) and implementation (default tier, Step 5) — as upstream report rows to fold into the pipeline's model table.
 
-- **Subagent = Yes** → an actual Agent tool call with `subagent_type`. Never run the substep inline in the main thread, even if the work feels small.
-- **Subagent = No / —** → run in the main thread (no Agent call).
-- **Model = Best available** → pass `model` to the Agent call set to whichever model the system identifies as the most capable currently running.
-- **Model = Default tier** → pass `model` to the Agent call set to the system's standard workhorse model — not the smallest/cheapest tier. If two candidates seem to fit, pick the more capable one.
-- **Model = —** → no `model` argument needed (only valid for "No" subagent rows).
-
-Omitting the `model` argument on a subagent call, or running a "Yes" row inline, is treated the same as skipping the step. It is a skill violation, not a shortcut.
-
-### Pre-flight enumeration
-
-Before invoking anything, write out each substep explicitly, resolving the abstract tier labels ("Best available", "Default tier") to concrete model names:
-
-```
-- 6.1 simplify   → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.2 polish     → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.3 review     → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.4 test       → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.5 cover      → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.6 analyse    → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.7 finalise   → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-- 6.8 wrap-up    → subagent: <yes/no>, model: <concrete model name or —>, condition: <met / skipped because …>
-```
-
-This locks the bindings before any Agent call is made; the user can spot a mis-translation here rather than after the fact.
-
-### Pipeline reference
-
-| Step | Skill | Subagent | Model | Condition | On failure |
-|------|-------|----------|-------|-----------|------------|
-| 6.1 | `simplify` | Yes | Default tier | Only if available (global or project skill) | Fix, then continue |
-| 6.2 | `polish` | Yes | Best available | Only if implementation touched UI/UX (views, layouts, CSS/Tailwind) | Fix, then continue |
-| 6.3 | `review` | Yes | Best available | Always | Fix critical/major findings, then continue |
-| 6.4 | `test` | Yes | Default tier | Always | Fix failures before moving on |
-| 6.5 | `cover` | Yes | Best available | Always | Add missing tests, then continue |
-| 6.6 | `analyse` | Yes | Default tier | If the project exposes an `/analyse` skill, run it; otherwise check for linters or profilers and run those; skip if none exist | Fix issues before moving on |
-| 6.7 | `finalise` | Yes | Best available | Always | Fix, then continue |
-| 6.8 | `wrap-up` | No | — | Always | Resolve blockers before completing |
-
----
-
-## Done
-
-Once `/wrap-up` completes, report back to the user with a brief summary:
-
-- What was implemented
-- Any notable decisions made
-- PR URL (from `/wrap-up`)
-- A table of which model was used for each step (planning, implementation, and each pipeline skill)
-
-### Hand-off: stop modifying the branch
-
-After the PR URL is reported, the user reviews it manually. Until the user explicitly asks for more work on this task:
-
-- **Do not** make further code changes, commits, amends, force-pushes, rebases, or branch operations
-- **Do not** push additional commits to the branch or update the PR
-- **Do not** treat follow-up work as implied — wait for an explicit instruction (e.g. "address the review comments", "push a fix for X", "fold in Y")
-
-You may still answer questions, explain the diff, or discuss the PR. If you notice something that looks worth changing, mention it and wait for the user to decide; don't act on it. This applies even in auto / continuous-execution modes — the manual-review hand-off overrides the default "keep going" bias.
+`pipeline` owns the quality pipeline, its final report, and the post-PR hand-off. When it returns, the task is complete — do not add further steps here.
