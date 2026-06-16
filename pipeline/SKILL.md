@@ -22,7 +22,7 @@ A caller may also pass **upstream report rows** — e.g. models already used for
 
 ## Pre-flight enumeration
 
-Before invoking anything, write out each step, resolving the tier labels to concrete model names for the models running right now. Doing this up front lets the user catch a mis-binding before any subagent spends tokens:
+Before invoking anything, write out each step, resolving the Opus/Sonnet labels to concrete model names for the models running right now. Doing this up front lets the user catch a mis-binding before any subagent spends tokens:
 
 ```
 - 1 simplify → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
@@ -41,7 +41,7 @@ The Subagent and Model columns map directly onto Agent-tool parameters. They exi
 
 - **Subagent = Yes** → a real Agent call with `subagent_type` and an explicit `model`. Don't inline it, even if the work feels small.
 - **Subagent = No** → main thread, no Agent call.
-- **Model = Best available** → the most capable model currently running. **Default tier** → the standard workhorse (not the cheapest). **—** → no model argument (only valid for "No" rows).
+- **Model = Latest Opus model** → the latest Opus model (the most capable). **Latest Sonnet model** → the latest Sonnet model (the standard workhorse). **—** → no model argument (only valid for "No" rows).
 
 Pass each subagent the brief (or, absent one, the diff scope) so its prompt is grounded. If a step's skill isn't available in this environment, note it and skip — don't hand-roll a weaker substitute.
 
@@ -49,13 +49,13 @@ Pass each subagent the brief (or, absent one, the diff scope) so its prompt is g
 
 | Step | Skill | Subagent | Model | Condition | On failure |
 |------|-------|----------|-------|-----------|------------|
-| 1 | `simplify` | Yes | Default tier | Only if the skill exists | Fix, then continue |
-| 2 | `polish` | Yes | Best available | Only if the diff touched UI/UX | Fix, then continue |
-| 3 | `review` | Yes | Best available | Always | Fix critical/major findings, then continue |
-| 4 | `test` | Yes | Default tier | Always | Fix failures before moving on |
-| 5 | `cover` | Yes | Best available | Always | Add missing tests, then continue |
-| 6 | `analyse` | Yes | Default tier | If an `/analyse` skill exists, else any linters present; skip if none | Fix, then continue |
-| 7 | `finalise` | Yes | Best available | Always | Fix, then continue |
+| 1 | `simplify` | Yes | Latest Sonnet model | Only if the skill exists | Fix, then continue |
+| 2 | `polish` | Yes | Latest Opus model | Only if the diff touched UI/UX | Fix, then continue |
+| 3 | `review` | Yes | Latest Opus model | Always | Fix critical/major findings, then continue |
+| 4 | `test` | Yes | Latest Sonnet model | Always | Fix failures before moving on |
+| 5 | `cover` | Yes | Latest Opus model | Always | Add missing tests, then continue |
+| 6 | `analyse` | Yes | Latest Sonnet model | If an `/analyse` skill exists, else any linters present; skip if none | Fix, then continue |
+| 7 | `finalise` | Yes | Latest Opus model | Always | Fix, then continue |
 | 8 | `wrap-up` | No | — | Always | Resolve blockers, then finish |
 
 Run sequentially — start a step only if the previous one succeeded. `wrap-up` runs in the main thread because it commits, pushes, and talks to the user about the PR; that interaction doesn't belong in a detached subagent.

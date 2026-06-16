@@ -54,7 +54,7 @@ If yes, **skip Steps 2 and 3** and go directly to Step 4. Present a brief summar
 
 ### 2.1 Context gathering (subagent)
 
-Delegate context gathering to a subagent using the Agent tool. Use the best available model — accurate context gathering directly shapes plan quality. Pass it:
+Delegate context gathering to a subagent using the Agent tool. Use the latest Opus model — accurate context gathering directly shapes plan quality. Pass it:
 
 - The task description
 - The plan file contents (if found)
@@ -72,7 +72,7 @@ Wait for the subagent to return before continuing.
 
 ### 2.2 Planning (main agent, /grill-me)
 
-Using the gathered context, invoke `/grill-me` to stress-test the approach with the user before writing a plan. Use the best available model.
+Using the gathered context, invoke `/grill-me` to stress-test the approach with the user before writing a plan. Use the latest Opus model.
 
 The interview should surface:
 
@@ -123,7 +123,7 @@ Wait for explicit confirmation before proceeding. If the user declines, stop and
 
 ## Step 5: Implementation (subagent)
 
-Delegate the full implementation to a subagent using the Agent tool. Use the default-tier model for this subagent — implementation does not require a planning-grade model. Pass it:
+Delegate the full implementation to a subagent using the Agent tool. Use the latest Sonnet model for this subagent — implementation does not require a planning-grade model. Pass it:
 
 - The approved implementation plan
 - The task description
@@ -140,6 +140,6 @@ Invoke the `pipeline` skill (Skill tool, name `pipeline`) to run the full qualit
 
 - the task description and the approved plan,
 - the context gathered in Step 2 (ADRs, spec excerpts, key files),
-- the models already used upstream — planning (best available, Steps 2.1/2.2) and implementation (default tier, Step 5) — as upstream report rows to fold into the pipeline's model table.
+- the models already used upstream — planning (latest Opus model, Steps 2.1/2.2) and implementation (latest Sonnet model, Step 5) — as upstream report rows to fold into the pipeline's model table.
 
 `pipeline` owns the quality pipeline, its final report, and the post-PR hand-off. When it returns, the task is complete — do not add further steps here.
