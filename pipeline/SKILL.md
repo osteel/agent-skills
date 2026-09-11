@@ -33,6 +33,7 @@ Before invoking anything, write out each step, resolving the Opus/Sonnet labels 
 - 6 qa       → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 7 wrap-up  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 8 monitor  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
+- 9 show-me  → subagent: no, model: —, condition: <artifact: UI/UX met / skipped because …; explanation: always>
 ```
 
 ## Reading the table
@@ -50,6 +51,8 @@ Pass each subagent the brief (or, absent one, the diff scope) so its prompt is g
 **`wrap-up` owns the full-suite run — make every step aware of it.** Put a line to that effect in each subagent prompt, and hold to it yourself on the inline steps. Left alone, the member skills run the suite themselves — `review` after applying fixes, `cover` after adding tests — which on a slow suite means repeat full runs to reach the same verdict `wrap-up` reaches once. Targeted runs are still fine and expected: verify the tests you just wrote, or the files you just touched. What no step before `wrap-up` should do is invoke the `test` skill for a full-suite pass.
 
 **Tell `wrap-up` not to re-run for confirmation.** Say so explicitly: its one guarded suite run is the gate, and a second "just to be sure" pass proves nothing the first didn't. Same for the other gates — one clean run each is the answer.
+
+**No step may report a result it did not observe.** Put this in every subagent prompt and hold to it inline. A step that fans out to its own review agents reports what those agents actually sent back; if one never replied, that is the finding. Attributing a conclusion to agents that never reported, or counting votes that were never cast, turns a single unreviewed opinion into false consensus and the pipeline's whole value is that the opinions are real. The same applies to gates: quote the output you read.
 
 **Batch fixes, then gate once.** When a step returns findings, apply *all* of them before running any gate, rather than gating after each fix. Linters, type-checkers and test suites are usually the slowest thing in the pipeline, and re-running the set after every individual fix is the easiest way to turn a ten-minute pipeline into an hour. Targeted verification of the file you just edited is cheap and encouraged; the full gate belongs at the end of the batch. If one fix might invalidate another, order the batch so the risky one lands first — don't gate in between to find out.
 
@@ -85,6 +88,13 @@ A quality step may propose undoing a change the user made deliberately — a sub
 ## Done
 
 Once `wrap-up` finishes, report briefly: what the change does, any notable decisions, the PR URL, and a per-step model table. Fold in any upstream rows the caller supplied; otherwise the table is just the pipeline steps. Then start `monitor` — when it stops, append its summary (fixes pushed, final CI state).
+
+Finally, invoke `show-me` (Skill tool, main thread) to present the finished work visually — the presentation layer of this report, not a new quality gate:
+
+- **Always** consider one `show-me` visual to carry the explanation when the change has a shape worth drawing (a flow, a refactor's file movement, a state transition). Prose-only is fine for a change that has none — don't manufacture a diagram.
+- **When the diff touched UI/UX** (the same Step 0.3 classification that gated `polish` and `qa`), have `show-me` publish a focused HTML **Artifact** walking through the visual change, and give the user the link.
+
+This step is read-only with respect to the branch — publishing an Artifact and writing an explanation are not branch modifications, so it does not breach the hand-off below. Run it after `monitor` stops; skip the Artifact (not the explanation) when the diff had no rendered surface.
 
 ## Run once, at the end
 

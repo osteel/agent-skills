@@ -156,8 +156,16 @@ Delegate the full implementation to a subagent using the Agent tool. Use the lat
 - The task description
 - All relevant context gathered in Step 2 (plan file, ADRs, spec excerpts, key source files)
 - The contents of `CLAUDE.md`
+- The reporting contract below, verbatim
 
-Wait for the subagent to complete and report back. If it reports failures or blockers, resolve them before continuing.
+### The reporting contract
+
+Put both rules in the subagent's prompt. Each exists because an implementation agent broke it and the cost landed here.
+
+1. **Finish before you stop.** A turn that ends with "I'll wait for the test run and report back" ends the agent — nothing wakes it, and the work lands on disk unverified with no report. If a check is slow, run it in the foreground and wait for it, or poll it to completion in the same turn. Never park on a background job.
+2. **Report only what you observed.** Every result you state must come from output you actually read. If a check never returned, say that. An invented pass, or a claim that other agents corroborated something they never sent you, is worse than no report at all.
+
+Wait for the subagent to report back, then check the tree yourself before continuing: `git status --short` and `git diff --stat`. If it reports failures or blockers, resolve them. If it stopped without reporting at all, the edits are still on disk and still unverified — verify them yourself rather than re-running the agent over a tree it has already changed.
 
 ---
 

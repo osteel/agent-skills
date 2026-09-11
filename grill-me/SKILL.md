@@ -32,6 +32,10 @@ Keep technical detail out of the questions. Name systems and constraints only wh
 
 Each round the user answers reshapes the tree — settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
+**Establish the facts before the round, not after it.** A question resting on an unchecked premise spends the user's attention on a decision they will have to make again. So: before you put a round, list the facts each question assumes, and check every one you can — read the code rather than recalling it, and look up the prevailing practice rather than asserting it. Two premises in particular are never safe from memory: what this codebase already does (one folder's shape is not a convention), and what is normal in the wider industry. If you catch yourself writing "the codebase already does X" or "this is standard", go and check.
+
+A recommendation carries the same burden. Retracting one after the user asks "is that common practice?" means the round was guesswork, and every answer downstream of it is now suspect.
+
 Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it — don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report — ask the rest of the frontier now. The _decisions_ are the user's — put each to them and wait.
 
 The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
