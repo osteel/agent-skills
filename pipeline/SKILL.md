@@ -98,7 +98,11 @@ This step is read-only with respect to the branch — publishing an Artifact and
 
 ## Run once, at the end
 
-The pipeline runs once per change, not once per revision of it. When the user is reviewing the work and asks for a change — during manual review of the diff, or on an open PR — make that change and stop. Don't re-run the pipeline, or any subset of its steps, on each revision. The pipeline runs again only when the user says so, at the end of the review, the same way committing waits for their word.
+The pipeline runs once per change, not once per revision of it. When the user is reviewing the work and asks for a change — during manual review of the diff, or on an open PR — make that change and stop. The pipeline runs again only when the user says so, at the end of the review, the same way committing waits for their word.
+
+**Stop means stop, and that includes the tools.** Not just the pipeline's own steps: no formatter, no static analysis, no test run, no matter how cheap or how fast. A review tweak is a comment reworded, a method renamed, a line deleted. Verifying each one turns a ten-second exchange into a two-minute one, and the user is reading the diff, not waiting on a linter. Batch them and run one sweep at the end, when they ask.
+
+Two things justify breaking that, and only these: the change cannot be right without a check the user cannot make by eye (a signature the type-checker must confirm, a rename that might have missed a call site), or the user asks. Say which, in a clause, rather than running it silently. A rename across several files is the usual case — verify by grepping for leftovers, not by running the suite.
 
 ## Hand-off: stop modifying the branch
 
