@@ -1,6 +1,6 @@
 ---
 name: pipeline
-description: Run the full post-implementation quality pipeline on a completed set of code changes — simplify, polish, review, analyse, cover, qa — then wrap it into a pull request and monitor CI until it's green. Trigger whenever a change is written and the user wants it hardened and shipped — "run the pipeline", "run it through the pipeline", "harden these changes", "get this branch ready to merge", "QA this and open a PR", "polish and ship this", or after finishing an implementation when the next move is the quality gate. This spawns several subagents and ends in a PR with green CI — it's the heavyweight "whole quality pass" option. For a single step (just review, just run tests, just open a PR), use that individual skill instead.
+description: Run the full post-implementation quality pipeline on a completed set of code changes — simplify, polish, review, cover, qa, analyse — then wrap it into a pull request and monitor CI until it's green. Trigger whenever a change is written and the user wants it hardened and shipped — "run the pipeline", "run it through the pipeline", "harden these changes", "get this branch ready to merge", "QA this and open a PR", "polish and ship this", or after finishing an implementation when the next move is the quality gate. This spawns several subagents and ends in a PR with green CI — it's the heavyweight "whole quality pass" option. For a single step (just review, just run tests, just open a PR), use that individual skill instead.
 effort: max
 ---
 
@@ -28,9 +28,9 @@ Before invoking anything, write out each step, resolving the Opus/Sonnet labels 
 - 1 simplify → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 2 polish   → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 3 review   → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
-- 4 analyse  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
-- 5 cover    → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
-- 6 qa       → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
+- 4 cover    → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
+- 5 qa       → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
+- 6 analyse  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 7 wrap-up  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 8 monitor  → subagent: <yes/no>, model: <name or —>, condition: <met / skipped because …>
 - 9 show-me  → subagent: no, model: —, condition: <artifact: UI/UX met / skipped because …; explanation: always>
@@ -63,9 +63,9 @@ Pass each subagent the brief (or, absent one, the diff scope) so its prompt is g
 | 1 | `simplify` | Yes | Latest Opus model | Always | Fix, then continue |
 | 2 | `polish` | Yes | Latest Opus model | Only if the diff touched UI/UX | Fix, then continue |
 | 3 | `review` | Yes | Latest Opus model | Always | Fix critical/major findings, then continue |
-| 4 | `analyse` | No | — | The project's own static-analysis skill if it has one, else any linters present; skip if neither | Fix, then continue |
-| 5 | `cover` | Yes | Latest Sonnet model | Always | Add missing tests, then continue |
-| 6 | `qa` | Yes | Latest Opus model | Only if the diff touched rendered output or client-side behaviour, AND browser automation is available, AND the app can be run locally | Fix, re-verify that path, then continue |
+| 4 | `cover` | Yes | Latest Sonnet model | Always | Add missing tests, then continue |
+| 5 | `qa` | Yes | Latest Opus model | Only if the diff touched rendered output or client-side behaviour, AND browser automation is available, AND the app can be run locally | Fix, re-verify that path, then continue |
+| 6 | `analyse` | No | — | The project's own static-analysis skill if it has one, else any linters present; skip if neither | Fix, then continue |
 | 7 | `wrap-up` | No | — | Always | Resolve blockers, then finish |
 | 8 | `monitor` | No | — | Only if wrap-up opened or updated a PR | Per the skill: fix and push; stop and report if unfixable |
 
@@ -75,15 +75,15 @@ Run sequentially — start a step only if the previous one succeeded.
 
 **The gate is the project's own default test command, not a forced full run.** Where a project uses test impact analysis (Pest's Tia, Jest `--onlyChanged`, `go test` caching, and friends), its default command already replays what your changes can't have affected, and its CI is the full-suite backstop that decides merge-green. Overriding that to force every test — `--ci`, `--no-tia`, `--runInBand` — is duplicated work on the slowest thing in the loop, and needs a concrete reason: a replayed result you don't believe, or a changed input the tool's graph cannot see. Check the project's own conventions before assuming a full run is the gate, and pass that instruction to every step.
 
-`qa` sits immediately before `wrap-up` for two reasons. Anything it finds gets fixed while the branch is still private, rather than as follow-up commits on an open PR — and because the gate now lives in `wrap-up`, a QA fix lands *before* the full suite runs rather than after it. QA's job is to find what tests structurally can't reach, so don't let it re-tread ground the targeted runs already cover.
+`qa` sits just before `analyse` and `wrap-up` for two reasons. Anything it finds gets fixed while the branch is still private, rather than as follow-up commits on an open PR — and because the gate now lives in `wrap-up`, a QA fix lands *before* the linters and the full suite run rather than after them. QA's job is to find what tests structurally can't reach, so don't let it re-tread ground the targeted runs already cover.
 
 It gets a subagent at the top model tier despite looking mechanical. Driving a browser is easy; deciding what is worth exercising, reading a screenshot correctly, and noticing that something is subtly wrong rather than absent is not. A misjudged check here produces a *false green*, which is worse than skipping the step — so this is judgement work closer to `review` than to `test`. Expect it to skip often: most changes have no rendered surface, and the skill is written to say so and stop rather than perform QA theatre. It also cannot proceed without working browser automation, so treat an unavailable browser as a skip with a stated reason, not a failure.
 
-`analyse` is a project-scoped skill in most repos — it belongs to the project because it wraps that project's linters and formatters. Look for it in the project's own `.claude/skills/`, not just the global library, and fall back to running the linters directly if there's no skill wrapping them. It is the linters only — it does not run the test suite.
+`analyse` is a project-scoped skill in most repos — it belongs to the project because it wraps that project's linters and formatters. Look for it in the project's own `.claude/skills/`, not just the global library, and fall back to running the linters directly if there's no skill wrapping them. It is the linters only — it does not run the test suite. It runs last among the quality steps so the formatters and type-checkers see every fix the earlier steps made, `cover`'s new tests and `qa`'s fixes included.
 
 `wrap-up` runs in the main thread because it commits, pushes, and talks to the user about the PR; that interaction doesn't belong in a detached subagent. `monitor` also runs in the main thread: drive it via `/loop` (dynamic pacing) so it re-checks CI across wakeups until every check is green. Its CI-fix commits are part of the pipeline's mandate, not post-PR follow-up.
 
-A quality step may propose undoing a change the user made deliberately — a subagent sees the diff, not which edits were intentional. If a step wants to revert something the user clearly chose, restore it and keep going. Step 4 runs in the main thread partly for this reason: it can still see the conversation that would tell it a choice was deliberate.
+A quality step may propose undoing a change the user made deliberately — a subagent sees the diff, not which edits were intentional. If a step wants to revert something the user clearly chose, restore it and keep going. Step 6 runs in the main thread partly for this reason: it can still see the conversation that would tell it a choice was deliberate.
 
 ## Done
 
