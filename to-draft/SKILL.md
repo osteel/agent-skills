@@ -1,6 +1,6 @@
 ---
 name: to-draft
-description: Draft a new article for Yannick's tech blog as an outline, created directly in his Notion Posts database (Work / Writing / Tech / Posts). Use whenever he asks to draft, start, sketch or outline a blog post, article or tech post — even if he doesn't say "Notion". Also use it for "new post about X", "let's write up Y", "I want to publish something on Z", "I might blog this", or anything else implying a new piece of long-form writing. If in doubt and the request looks like blog writing, prefer this skill. The output is deliberately a skeleton he extends in his own voice, never a finished article.
+description: Draft a new article for Yannick's tech blog as an outline, created directly in his Notion Posts database (Work / Projects / Yellow Raincoat / Writing / Tech / Posts). Use whenever he asks to draft, start, sketch or outline a blog post, article or tech post — even if he doesn't say "Notion". Also use it for "new post about X", "let's write up Y", "I want to publish something on Z", "I might blog this", or anything else implying a new piece of long-form writing. If in doubt and the request looks like blog writing, prefer this skill. The output is deliberately a skeleton he extends in his own voice, never a finished article.
 effort: medium
 ---
 
@@ -27,7 +27,7 @@ Two things decide whether it's actually useful:
 
 ## Target location
 
-All drafts go into the **📝 Posts** database at `Work > Writing > Tech > Posts`.
+All drafts go into the **📝 Posts** database at `Work > Projects > Yellow Raincoat > Writing > Tech > Posts`.
 
 - Data source: `collection://ef764a85-c1ab-488e-abac-858d914f9e1a`
 - Database page: `https://app.notion.com/p/c481f41294ae4a289a9453230dfe7098`
@@ -54,7 +54,22 @@ Before anything else, ask whether he already has material — rough notes, bulle
 
 Read what he gives you, internalise it, move on. Clarifications can wait.
 
-### 2. Read two recent published posts
+### 2. Load the brand DNA
+
+The blog belongs to Yellow Raincoat, so its brand DNA page applies. Fetch it with the Notion fetch tool:
+
+- **Yellow Raincoat Brand DNA**: page ID `3e4cc17ef4b081a8aba1d1506192cdf8` (Work > Projects > Yellow Raincoat > Brand DNA)
+- If the post is about PixelWatcher, also fetch the **PixelWatcher Brand DNA**: page ID `3e4cc17ef4b08116a22ef7d5bbd1bb52`.
+
+Because the output is an outline, use it for substance, not voice — the prose is his:
+
+- **Point of view**: the positions he holds shape the angle and which points the outline makes.
+- **Naming and terminology rules** apply to every sentence in the outline: "Fractional CTO", a year rather than a fixed count of experience, PixelWatcher always with its category ("website change monitoring").
+- **Heck-no claims** stay out: guarantees, unverifiable adjectives. Check the outline against the list before creating the page.
+- Rules tagged **Observed** or **Decided** are binding; **Proposed** ones are preferences until he confirms them.
+- Sentence-level voice rules (humour, rhythm, openings) are for him when he writes it up — don't imitate them in the outline.
+
+### 3. Read two recent published posts
 
 Sample 2–3 of the most recent posts with `Status = published` before outlining. Since you're not writing prose, you're mirroring **shape and register**, not sentence rhythm:
 
@@ -68,11 +83,11 @@ Recent posts publish to **yellowraincoat.co.uk** and are short, first-person and
 
 Note the patterns to yourself explicitly before outlining — easier to match a shape you've named than one you've skimmed.
 
-### 3. Confirm scope, lightly
+### 4. Confirm scope, lightly
 
-Default to `Status: drafting` and a finished length matched to recent posts (~800–1000 words), which sets how many points the outline carries. Ask only when it's genuinely open — one `AskUserQuestion` covering target length and starting status, never a series. He wants to move fast.
+Default to `Status: drafting` and a finished length matched to recent posts (~800–1000 words), which sets how many points the outline carries. Ask only when it's genuinely open — one structured question covering target length and starting status (`AskUserQuestion` in Claude Code, the tappable-options tool in chat), never a series. He wants to move fast.
 
-### 4. Create the outline in Notion
+### 5. Create the outline in Notion
 
 Go straight to the page — the outline *is* the artifact, so there's no separate chat-approval round trip. It's cheap to redirect once it exists.
 
@@ -81,7 +96,7 @@ Go straight to the page — the outline *is* the artifact, so there's no separat
 - Blank line between points so each is its own block, editable in place.
 - `icon: "📝"` to match the database.
 
-### 5. Hand back the link
+### 6. Hand back the link
 
 Give the URL, the section headings, and anything you deliberately left out with the reason — a tangent that would double the length, or a thread that belongs in its own post. A named omission is easy to overrule; a silent one isn't.
 
@@ -97,7 +112,8 @@ These go out under his name, so a reader can check them.
 
 - **Writing prose.** The single most likely failure. Full paragraphs get rewritten; the outline is the point.
 - **Abstracting away the specifics.** An outline of general claims is useless — the concrete details are the part he can't cheaply regenerate.
-- **Skipping "what do you have already?"** Wastes a voice pass and risks an angle he didn't want.
+- **Skipping "what do you have already?"** Wastes a pass and risks an angle he didn't want.
+- **Skipping the brand DNA.** The naming rules and heck-no claims apply to outlines too, and a wrong term in the outline survives into the post.
 - **Skipping the published-post read.** Tempting when the topic is exciting; it's what keeps the shape his.
 - **Searching for the Posts database by name.** Three share it. Use the data source id.
 - **Title as an H1 in the content.** Duplicates it against the `Name` property.
