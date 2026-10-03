@@ -101,7 +101,7 @@ Wait for the subagent to return before continuing.
 
 ### 2.2 Planning (main agent, /grill-me)
 
-Using the gathered context, invoke `/grill-me` to stress-test the approach with the user before writing a plan. Use the latest Opus model.
+Using the gathered context, invoke `/grill-me` to stress-test the approach with the user before writing a plan.
 
 The interview should surface:
 
@@ -116,7 +116,7 @@ Once `/grill-me` reaches shared understanding, synthesise the outcomes into a co
 
 ## Step 3: Refine and approve the plan
 
-Present the plan and any questions from the planning subagent to the user. Answer questions and incorporate feedback. If the user requests changes, relay them to the subagent (or revise directly if minor) and re-present.
+Present the plan to the user. Answer questions, incorporate feedback, and re-present.
 
 Repeat until the user approves the plan.
 

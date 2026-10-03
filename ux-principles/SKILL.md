@@ -1,32 +1,15 @@
 ---
 name: ux-principles
-description: Applies strict usability, clarity, and accessibility rules when creating interfaces, flows, layouts, and UX copy. Use during design and generation, not for critique or reporting. Covers how the UI *works* — for how it *looks* (colour, spacing, typography, depth), also invoke `ui-rules`.
+description: Applies strict usability, clarity, and accessibility rules when creating or improving interfaces, flows, layouts, and UX copy, including when critiquing an existing flow. Shapes the result; never produces a standalone UX audit or report. Covers how the UI *works* — for how it *looks* (colour, spacing, typography, depth), also invoke `ui-rules`.
 user-invocable: false
 ---
 
 # Basic UX Principles
 
-When **creating** interfaces, flows, layouts, or UX copy, ensure the result is immediately understandable, decision-light, and usable by an average or below-average user **without instructions**.
+When **creating or improving** interfaces, flows, layouts, or UX copy, ensure the result is immediately understandable, decision-light, and usable by an average or below-average user **without instructions**.
 
 This skill is **generative and prescriptive**, not analytical.
 It exists to **shape outputs at creation time**, not to produce UX audits or reports.
-
----
-
-## When to use this Skill
-
-Apply this skill automatically whenever the agent is asked to:
-
-- Design a UI, screen, page, dashboard, or flow
-- Propose layouts, wireframes, or interaction patterns
-- Write UX copy, microcopy, labels, headings, or onboarding text
-- Design forms, navigation, search, or information architecture
-- Make UX trade-offs during product or interface creation
-
-Do **not** invoke this skill when:
-- The task is purely visual branding or illustration
-- The user explicitly asks for a UX review or critique
-- The task is backend, infrastructure, or non-interactive logic
 
 ---
 
@@ -69,11 +52,6 @@ When this skill is active, the agent should:
 - Make defaults explicit and remove unnecessary choices
 - Avoid adding explanatory text where design can do the work
 - Only surface rationale if the user explicitly asks “why”
-
-The agent should **not**:
-- Produce UX review reports by default
-- Explain UX theory
-- Justify every decision unless asked
 
 ---
 

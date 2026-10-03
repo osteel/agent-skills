@@ -120,7 +120,7 @@ Apply only the approved changes. Work in this order to keep the suite green thro
 7. **Delete rotted skipped tests** — remove the approved ones.
 8. **Remove redundant browser/e2e tests** — edit files to remove the identified tests. Delete the file if it becomes empty.
 
-After each change, run the affected tests via the `test` skill to confirm they still pass. Run the full suite at the end.
+After each change, run only the affected test files directly; the full run happens once, in Phase 5.
 
 ## Phase 5: Wrap up
 

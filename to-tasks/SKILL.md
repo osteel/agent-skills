@@ -1,5 +1,5 @@
 ---
-name: to-tickets
+name: to-tasks
 description: Break a plan, spec, or the current conversation into a set of tracer-bullet tickets, each declaring its blocking edges, published to the configured tracker — edges as text in one file per ticket locally, or native blocking links on a real tracker.
 disable-model-invocation: true
 ---
@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Break a plan, spec, or conversation into a set of **tickets** — tracer-bullet vertical slices, each declaring the tickets that **block** it.
 
-The issue tracker and triage label vocabulary should have been provided to you — ask the user if not.
+Use the issue tracker the project's instruction files name; if none is named, ask the user which tracker and labels to use.
 
 ## Process
 

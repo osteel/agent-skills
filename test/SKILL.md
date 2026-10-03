@@ -34,7 +34,7 @@ For each failing test, start by running just the failing test(s) in isolation â€
 
 ## Phase 3: Fix Failures
 
-1. **Summarize findings to the user** and wait for approval before making changes:
+1. **If the user asked only to run the tests**, summarize findings and wait for approval before making changes; if they asked to fix them or make them pass, proceed:
    - What failed and why
    - Whether the fix should be in the test or source code
    - Your proposed approach

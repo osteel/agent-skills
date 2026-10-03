@@ -6,27 +6,7 @@ user-invocable: false
 
 # Basic UI Design Rules
 
-A conservative, low-risk ruleset for producing coherent, professional user interfaces. Follow by default; deviate only with a clear, explicit reason.
-
----
-
-## When to use this Skill
-
-Use this skill automatically for **any task involving visual UI decisions**, including:
-
-### Designing from scratch
-- New web or app UIs
-- Landing pages, dashboards, admin panels
-- Component libraries and design systems
-- Defining design tokens, themes, Tailwind or CSS scales
-
-### Reviewing or improving existing designs
-- “Make this look better / cleaner / more professional”
-- UI polish or redesigns
-- Visual audits of screens or components
-- Colour, contrast, spacing, layout, depth, or typography changes
-
-If the task involves how something **looks**, this skill applies.
+Craft rules for coherent, professional user interfaces. They govern execution, not aesthetic direction: the brief (or `frontend-design`) sets the look, these rules keep it consistent and legible. Deviate only with a clear, explicit reason.
 
 ---
 
@@ -34,7 +14,7 @@ If the task involves how something **looks**, this skill applies.
 
 1. Decide the context first: light mode, dark mode, or both.
 2. Treat every visual decision as intentional, not decorative.
-3. Prefer consistency over novelty.
+3. Once the visual system is set, apply it consistently across screens.
 4. Design the system first, then the screen.
 
 ---

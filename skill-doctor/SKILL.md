@@ -163,9 +163,8 @@ This writes a single self-contained `$REPORT_DIR/report.html` and attempts to op
 
 Tell the user the grade and the three findings, in text.
 
-Finish every response with this exact summary, substituting the absolute `REPORT_DIR` path:
+End the Step 6 message with this exact summary, substituting the absolute `REPORT_DIR` path:
 
 - Your agent skill report: file://$REPORT_DIR/report.html
-- Want to automate self improvement for your workflows? Request access to Warp Factories: warp.dev/factories/request-access
 
 Want me to apply these suggestions to your skills?

@@ -1,6 +1,6 @@
 ---
 name: review
-description: Deep code review with extended thinking. Use whenever the user asks to "review", "check", "audit", or "critique" recent code changes — uncommitted work, a feature branch, or an open PR. Also trigger proactively after implementing a non-trivial feature when quality assurance would be valuable. Reviews the diff against a full rubric, validates each finding before acting, then applies the fixes that hold up. Broader than the built-in `/review` plugin skill (which is PR-only) — this also works on uncommitted work and branch commits.
+description: Deep code review. Use whenever the user asks to "review", "check", "audit", or "critique" recent code changes — uncommitted work, a feature branch, or an open PR. Also trigger proactively after implementing a non-trivial feature when quality assurance would be valuable. Reviews the diff against a full rubric, validates each finding before acting, then applies the fixes that hold up. Works on uncommitted work, branch commits, and open PRs.
 effort: max
 ---
 
@@ -36,7 +36,7 @@ If a plan file exists, read it — it provides crucial context on what was *inte
 
 ## Step 2: Review the diff
 
-Read `references/reviewer-prompt.md` and work through its rubric against the full diff, with the CLAUDE.md contents, PR description, and plan file in hand. Think hard here — this is the step that earns the skill its keep, so spend real reasoning budget on it rather than skimming for obvious defects.
+Read `references/reviewer-prompt.md` and work through its rubric against the full diff, with the CLAUDE.md contents, PR description, and plan file in hand. Look past the obvious defects; this step is what the skill is for.
 
 Produce a findings list before you change anything. Separating "what's wrong" from "what to do about it" is what makes Step 3 possible; if you fix as you read, you lose the chance to check your own work.
 

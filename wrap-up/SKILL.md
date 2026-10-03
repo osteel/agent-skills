@@ -39,7 +39,7 @@ Examine `git diff HEAD` once, then check each of these in order:
 | Check | Condition | Action |
 |-------|-----------|--------|
 | Agent rules | `.claude/rules/`, `.cursor/rules/`, `.windsurf/rules/`, `.copilot/rules/` exists | Add/update rules for non-obvious constraints; apply to all rules dirs found |
-| Laravel guidelines | `.ai/guidelines/` exists | Invoke `laravel-guidelines` if diff contains non-standard decisions; run `artisan boost:install` after |
+| Laravel guidelines | `.ai/guidelines/` exists | Invoke `laravel-guidelines` if diff contains non-standard decisions; run `artisan boost:update` after |
 | ADR | `docs/decisions/` or `docs/adr/` exists | Invoke `adr` if diff contains an architectural or significant design decision |
 | Documentation | Any docs directory exists (`docs/`, `doc/`, `documentation/`, or similar) | Update any documentation files affected by the diff — changelogs, READMEs, API docs, guides. Only update what the diff actually changes; don't rewrite unrelated docs |
 

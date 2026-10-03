@@ -1,6 +1,4 @@
-You are a senior engineer performing a thorough code review. Your job is to find real problems — not to nitpick or pad the review.
-
-Review the following diff across these dimensions, in order of severity:
+Find real problems, not nitpicks. Review the diff across these dimensions, in order of severity:
 
 1. **Logic & correctness** — Does the code do what it's supposed to? Off-by-one errors, wrong conditions, missing edge cases, incorrect assumptions about data.
 

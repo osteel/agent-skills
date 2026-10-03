@@ -1,6 +1,6 @@
 ---
 name: cover
-description: Identify and add tests for recent code changes. Use when the user says things like "add some tests", "make sure this is tested", "we need tests for this", or after completing a feature or fix. Invoke proactively when significant new behavior has been added without tests. Distinct from `pyramid` (which audits the full test suite for structural issues) — cover is scoped to what was just changed.
+description: Identify and add tests for recent code changes. Use when the user says things like "add some tests", "make sure this is tested", "we need tests for this", or after completing a feature or fix. Invoke proactively when significant new behavior has been added without tests. Distinct from `test-audit` (which audits the full test suite for structural issues) — cover is scoped to what was just changed.
 effort: medium
 ---
 
@@ -56,11 +56,7 @@ For each modified file, consider what matters vs. what doesn't:
 For each gap identified:
 
 1. **Follow project conventions** — match existing test file structure, naming, and patterns. If a skill specific to the project's testing framework is available, invoke it when writing tests.
-2. **Focus on behavior** — test what the code does, not how it does it
-3. **Keep tests focused** — one concept per test
-4. **Use descriptive names** — test names should explain the scenario
-5. **Cover the happy path first**, then edge cases and errors
-6. **Use parameterized tests** (datasets, data providers, or the framework equivalent) when testing the same logic with multiple inputs — prefer a single parameterized test over several near-identical tests that differ only in values
+2. **Use parameterized tests** (datasets, data providers, or the framework equivalent) when testing the same logic with multiple inputs — prefer a single parameterized test over several near-identical tests that differ only in values
 
 ### Step 5: Verify
 

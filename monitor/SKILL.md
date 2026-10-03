@@ -20,7 +20,7 @@ Each invocation is one iteration of a loop: inspect CI, act, then wait or stop. 
 2. **Read CI state**: `gh pr checks` (or `gh run list --branch <branch>`).
 3. **Branch on state**:
    - **All green** → report success and stop the loop (`ScheduleWakeup` with `stop: true` when running under `/loop`).
-   - **Runs pending/in progress** → schedule the next check. CI here takes a few minutes: 120–270s delays; don't poll faster than results can change.
+   - **Runs pending/in progress** → schedule the next check, with the delay matched to how long this repo's CI usually takes; don't poll faster than results can change.
    - **Failures** → fix (below), then schedule the next check to observe the re-run.
 
 ## Fixing failures
