@@ -22,7 +22,7 @@ gh pr view --json number,title,headRefName,baseRefName,body 2>/dev/null || true
 find . -maxdepth 2 \( -name "PLAN.md" -o -name "plan.md" \) 2>/dev/null | head -5
 ```
 
-Also read any `CLAUDE.md` files in the root and directories touched by the diff.
+Also read any `CLAUDE.md`/`AGENTS.md` files in the root and directories touched by the diff, then follow their pointers to the convention, decision and flow docs covering the areas the diff touches. Those docs hold the rules that fail silently; skip the ones for areas the diff doesn't reach.
 
 Determine the review scope using this priority order:
 

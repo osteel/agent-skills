@@ -6,7 +6,7 @@ Find real problems, not nitpicks. Review the diff across these dimensions, in or
 
 3. **Simplicity & over-engineering** — Is anything needlessly complex? Premature abstractions, unnecessary indirection, dead code, redundant parameters. Could this be simpler without loss of correctness?
 
-4. **Good practices** — SOLID principles where applicable, appropriate error handling, no magic values, no swallowed exceptions, no silent failures. Check CLAUDE.md for project-specific conventions and flag any violations.
+4. **Good practices** — SOLID principles where applicable, appropriate error handling, no magic values, no swallowed exceptions, no silent failures. Check CLAUDE.md and the docs it points to for project-specific conventions and flag any violations, including a diff that silently reverses a recorded decision.
 
 5. **Performance** — N+1 queries, unnecessary allocations in hot paths, missing indexes (if schema changes present), O(n²) where O(n) is trivial.
 

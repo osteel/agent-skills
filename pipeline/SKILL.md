@@ -48,11 +48,13 @@ Isolation isn't free, so it isn't uniform. A subagent gets a clean, undistracted
 
 Pass each subagent the brief (or, absent one, the diff scope) so its prompt is grounded. If a step's skill isn't available in this environment, note it and skip — don't hand-roll a weaker substitute.
 
+**Keep `review` off its neighbours' ground.** Tell it that `simplify` has already run and `cover` runs next: flag only complexity `simplify` left behind, and report test gaps as findings without writing the tests. Pass those test-gap findings into the `cover` prompt — they are edge cases `review`'s logic pass already found, which `cover` would otherwise re-derive from the diff.
+
 **`wrap-up` owns the full-suite run — make every step aware of it.** Put a line to that effect in each subagent prompt, and hold to it yourself on the inline steps. Left alone, the member skills run the suite themselves — `review` after applying fixes, `cover` after adding tests — which on a slow suite means repeat full runs to reach the same verdict `wrap-up` reaches once. Targeted runs are still fine and expected: verify the tests you just wrote, or the files you just touched. What no step before `wrap-up` should do is invoke the `test` skill for a full-suite pass.
 
 **Tell `wrap-up` not to re-run for confirmation.** Say so explicitly: its one guarded suite run is the gate, and a second "just to be sure" pass proves nothing the first didn't. Same for the other gates — one clean run each is the answer.
 
-**No step may report a result it did not observe.** Put this in every subagent prompt and hold to it inline. A step that fans out to its own review agents reports what those agents actually sent back; if one never replied, that is the finding. Attributing a conclusion to agents that never reported, or counting votes that were never cast, turns a single unreviewed opinion into false consensus and the pipeline's whole value is that the opinions are real. The same applies to gates: quote the output you read.
+**No step may report a result it did not observe.** Put this in every subagent prompt and hold to it inline. A step reports only what it observed; if a subagent it spawned never replied, that is the finding. Attributing a conclusion to an agent that never reported turns a single unreviewed opinion into false consensus, and the pipeline's whole value is that the opinions are real. The same applies to gates: quote the output you read.
 
 **Batch fixes, then gate once.** When a step returns findings, apply *all* of them before running any gate, rather than gating after each fix. Linters, type-checkers and test suites are usually the slowest thing in the pipeline, and re-running the set after every individual fix is the easiest way to turn a ten-minute pipeline into an hour. Targeted verification of the file you just edited is cheap and encouraged; the full gate belongs at the end of the batch. If one fix might invalidate another, order the batch so the risky one lands first — don't gate in between to find out.
 
@@ -62,7 +64,7 @@ Pass each subagent the brief (or, absent one, the diff scope) so its prompt is g
 |------|-------|----------|-------|-----------|------------|
 | 1 | `simplify` | Yes | Latest Opus model | Always | Fix, then continue |
 | 2 | `polish` | Yes | Latest Opus model | Only if the diff touched UI/UX | Fix, then continue |
-| 3 | `review` | Yes | Latest Opus model | Always | Fix critical/major findings, then continue |
+| 3 | `review` | Yes | Latest Opus model | Always | Apply validated findings, then continue |
 | 4 | `cover` | Yes | Latest Sonnet model | Always | Add missing tests, then continue |
 | 5 | `qa` | Yes | Latest Opus model | Only if the diff touched rendered output or client-side behaviour, AND browser automation is available, AND the app can be run locally | Fix, re-verify that path, then continue |
 | 6 | `analyse` | No | — | The project's own static-analysis skill if it has one, else any linters present; skip if neither | Fix, then continue |
