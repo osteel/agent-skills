@@ -56,6 +56,7 @@ Match what the repo already does. A commit that reads differently from its neigh
 - The non-obvious choices and *why* — especially anything a future reader would otherwise "fix" and regress. If the PR deliberately didn't reuse an existing helper, say which and why.
 - Invariants now enforced, and by what — an arch test, a DB constraint, a type
 - Anything a reader of the touched files would find surprising without this context
+- A renumbering's old-to-new mapping (ADRs, for example). Commits, PRs and tickets outside this one still cite the old numbers, so it isn't journey.
 
 The reliable test for any sentence: **would it still be true and worth saying if the whole change had been written perfectly in a single commit?** If it only makes sense because of how the work unfolded, it's journey — cut it.
 
@@ -134,18 +135,20 @@ Write comments as statements of fact about the merged change, specific enough to
 
 **Comment, never close, and never reopen.** The PR's own issue is already closed by `Fixes #N`, so don't comment there as well. Any other issue that now looks complete gets a comment saying so, and the owner decides.
 
-## 8. Return to the default branch and clean up
+## 8. Delete the local branch
 
-Do this **only when the PR you merged is the branch currently checked out** — compare `headRefName` from step 1 against `git branch --show-current`. Merging some other PR shouldn't yank someone off the work they're sitting on.
+Always delete the merged branch locally, in the PR's repo checkout. Get `headRefName` and `baseRefName` from `gh pr view <N>` and compare `headRefName` against `git branch --show-current`.
 
-First check the tree is clean (`git status --porcelain`). If there are uncommitted changes, stop and say so rather than stashing on their behalf — you don't know whether that work belongs to the merged branch or is the start of something new.
+**The merged branch is checked out.** First check the tree is clean (`git status --porcelain`). If there are uncommitted changes, stop and say so rather than stashing on their behalf — you don't know whether that work belongs to the merged branch or is the start of something new. Otherwise:
 
 ```bash
-git checkout <default>   # gh repo view --json defaultBranchRef -q .defaultBranchRef.name
+git checkout <baseRefName>
 git pull
-git branch -D <branch>
+git branch -D <headRefName>
 ```
 
-`-D` rather than `-d` is deliberate. A squash merge puts a single new commit on the default branch, so none of the branch's own commits are ancestors of it and `-d` refuses the delete as "not fully merged". You have just confirmed the PR merged, so the content is on the default branch under a different SHA — this is the narrow case where forcing is correct rather than a way around a warning. If the merge somehow didn't land, step 6 would have caught it and you would not be here.
+**Another branch is checked out.** Don't switch — merging some PR shouldn't yank someone off the work they're sitting on. Run `git branch -D <headRefName>` if the branch exists locally.
 
-Report the merge commit SHA, the deleted branch, whether the issue auto-closed, and any other issues you commented on in step 7 with the reason — so the user can correct or delete anything you got wrong. If the remote branch still exists (GitHub deletes it automatically only when the repo is configured to), say so — that one is theirs to remove.
+`-D` rather than `-d` is deliberate. A squash merge puts a single new commit on the base branch, so none of the branch's own commits are ancestors of it and `-d` refuses the delete as "not fully merged". You have just confirmed the PR merged, so the content is on the base branch under a different SHA — this is the narrow case where forcing is correct rather than a way around a warning. If the merge somehow didn't land, step 6 would have caught it and you would not be here.
+
+Report the merge commit SHA, the deleted local branch (or that none existed), whether the issue auto-closed, and any other issues you commented on in step 7 with the reason — so the user can correct or delete anything you got wrong. If the remote branch still exists (GitHub deletes it automatically only when the repo is configured to), say so — that one is theirs to remove.

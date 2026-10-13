@@ -48,6 +48,13 @@ Isolation isn't free, so it isn't uniform. A subagent gets a clean, undistracted
 
 Pass each subagent the brief (or, absent one, the diff scope) so its prompt is grounded. If a step's skill isn't available in this environment, note it and skip — don't hand-roll a weaker substitute.
 
+**Keep `simplify` fast.** Put these in its prompt:
+
+- Its review agents (reuse, simplification, efficiency, altitude — whatever angles it uses) run with `model: "sonnet"`. They only read and propose. Judging their findings and making the edits stays with the `simplify` subagent itself, because that is where a cleanup can introduce a regression.
+- Under about 50 changed lines, it reviews the angles itself and spawns no review agents.
+- Reviewers stay within the diff and the code it calls or is called by. Searching for an existing helper by name or pattern is fine; surveying the codebase is not — that is what makes this step slow.
+- When the same edit repeats across many files, review two or three of them in full and skim the rest for differences. Apply any fix to every copy.
+
 **Keep `review` off its neighbours' ground.** Tell it that `simplify` has already run and `cover` runs next: flag only complexity `simplify` left behind, and report test gaps as findings without writing the tests. Pass those test-gap findings into the `cover` prompt — they are edge cases `review`'s logic pass already found, which `cover` would otherwise re-derive from the diff.
 
 **`wrap-up` owns the full-suite run — make every step aware of it.** Put a line to that effect in each subagent prompt, and hold to it yourself on the inline steps. Left alone, the member skills run the suite themselves — `review` after applying fixes, `cover` after adding tests — which on a slow suite means repeat full runs to reach the same verdict `wrap-up` reaches once. Targeted runs are still fine and expected: verify the tests you just wrote, or the files you just touched. What no step before `wrap-up` should do is invoke the `test` skill for a full-suite pass.

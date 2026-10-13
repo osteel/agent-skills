@@ -14,6 +14,8 @@ Find real problems, not nitpicks. Review the diff across these dimensions, in or
 
 If a plan or design doc was provided: does the implementation match what was planned? Flag deviations — they may be intentional improvements or accidental omissions.
 
+If the diff adds or changes an ADR, check it against the `adr` skill's rules. Is one owed at all, or is the content a product rule? Is it 150–400 words? Does it name only the code the `adr` skill's "How much code to name" allows? Does it avoid figures or to-dos that will go stale? Is a decision not yet in production revised in place rather than amended by a new ADR? A breach is a `minor` finding — it never blocks the change.
+
 For each finding, provide:
 - Severity: `critical` / `major` / `minor`
 - File and line reference
