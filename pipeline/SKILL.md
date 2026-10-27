@@ -54,6 +54,7 @@ Pass each subagent the brief (or, absent one, the diff scope) so its prompt is g
 - Under about 50 changed lines, it reviews the angles itself and spawns no review agents.
 - Reviewers stay within the diff and the code it calls or is called by. Searching for an existing helper by name or pattern is fine; surveying the codebase is not — that is what makes this step slow.
 - When the same edit repeats across many files, review two or three of them in full and skim the rest for differences. Apply any fix to every copy.
+- This line, verbatim, in its own prompt and in each review agent's: "Time matters here: do not spend time that can be avoided, and the earlier a correct result is obtained, the better."
 
 **Keep `review` off its neighbours' ground.** Tell it that `simplify` has already run and `cover` runs next: flag only complexity `simplify` left behind, and report test gaps as findings without writing the tests. Pass those test-gap findings into the `cover` prompt — they are edge cases `review`'s logic pass already found, which `cover` would otherwise re-derive from the diff.
 

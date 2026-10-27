@@ -94,8 +94,9 @@ The subagent should read everything needed to understand the task fully:
 - Relevant ADRs — scan `docs/decisions/` or `docs/adr/` filenames, read the ones related to the task
 - Relevant spec/product docs — any `SPEC.md`, `PRD.md`, or equivalent
 - Source files directly related to the task (models, controllers, services, tests, views — whatever applies)
+- **Project conventions** — find the project's conventions index (usually a section of `CLAUDE.md`/`AGENTS.md` listing pages under a conventions directory). Read every page it marks as required, whatever the task. For each remaining page, decide against the task whether to read it, and read the ones that apply. When unsure, read it: a skipped page is how a rule the project already wrote down ends up broken in the diff.
 
-The subagent should return the gathered context — key excerpts, file paths, and any observations relevant to planning — but not produce a plan itself.
+The subagent should return the gathered context — key excerpts, file paths, and any observations relevant to planning — but not produce a plan itself. It also returns a **conventions ledger**: one line per convention page, marked required, read (with the part of the task that makes it apply) or skipped (with why it doesn't). Every page in the index appears in the ledger, so a skip is a visible choice rather than an oversight.
 
 Wait for the subagent to return before continuing.
 
@@ -155,6 +156,7 @@ Delegate the full implementation to a subagent using the Agent tool. Use the lat
 - The approved implementation plan
 - The task description
 - All relevant context gathered in Step 2 (plan file, ADRs, spec excerpts, key source files)
+- The paths of every convention page the ledger marks required or read, with the instruction to read each one before writing code. Pass the paths, not your summary: a rule the implementer only heard about secondhand is the one it breaks.
 - The contents of `CLAUDE.md`
 - The reporting contract below, verbatim
 
@@ -175,6 +177,7 @@ Invoke the `pipeline` skill (Skill tool, name `pipeline`) to run the full qualit
 
 - the task description and the approved plan,
 - the context gathered in Step 2 (ADRs, spec excerpts, key files),
+- the conventions ledger from Step 2.1, so the `simplify` and `review` subagents read the same required and applicable pages and judge the diff against them,
 - the models already used upstream — planning (latest Opus model, Steps 2.1/2.2) and implementation (latest Sonnet model, Step 5) — as upstream report rows to fold into the pipeline's model table.
 
 `pipeline` owns the quality pipeline, its final report, and the post-PR hand-off. When it returns, the task is complete — do not add further steps here.
